@@ -1,0 +1,3 @@
+-if uniswapV3 fee not found, skip uniswapV3 price check
+DONE-input amountLoan as argument
+-a new standalone tool to analyze the block all txs to see what affect the swap price and create arb opportunity
