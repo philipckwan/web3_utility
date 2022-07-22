@@ -68,6 +68,22 @@ exports.parseArgumentForSwaps = (arg) => {
     return [isSwaps, swaps];
 }
 
+exports.resolveTokenSymbolAndAddress = async (input) => {
+    let tokenSymbol = "n/a";
+    let tokenAddress = "0xaaaa";
+    if (input.substring(0,2) == "0x") {
+        // input is a token address
+        tokenAddress = input;
+        let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
+        tokenSymbol = await tokenContract.symbol();
+    } else {
+        // input is a token symbol
+        tokenSymbol = input.toUpperCase();
+        tokenAddress = await this.getTokenContract(ERC20_TOKEN[tokenSymbol]).address;
+    }
+    return [tokenSymbol, tokenAddress];
+}
+
 exports.formatTime = (d) => {
     let aDate = new Date(d);
     let minute = aDate.getMinutes();
@@ -86,6 +102,11 @@ exports.getConnectedWallet = (walletSecret) => {
     connectedWallet = wallet.connect(this.provider);
 
     return connectedWallet;
+}
+
+exports.getTokenContractByAddress = (tokenAddress) => {
+    let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
+    return tokenContract;
 }
 
 exports.getTokenContract = (token) => {
@@ -113,6 +134,19 @@ exports.printNativeBalance = async (address) => {
     let nativeBalance = ethers.utils.formatUnits(bnNativeBalance, 18);
 
     console.log(`helpers.printNativeBalance: address:[${address}]; nativeBalance:$${nativeBalance};`);
+}
+
+exports.printTokenInfoAndBalanceByAddress = async (tokenAddress) => {
+    let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
+    let tokenSymbolFromContract = await tokenContract.symbol();
+    let tokenDecimalsFromContract = await tokenContract.decimals();
+    let tokenNameFromContract = await tokenContract.name();
+    console.log(`helpers.printTokenInfoAndBalanceByAddress: token address:${tokenAddress}; symbol:${tokenSymbolFromContract}; name:${tokenNameFromContract}; decimals:${tokenDecimalsFromContract};`);
+
+    let bnBalance = await tokenContract.balanceOf(this.MY_ADDRESS);
+    let balance = ethers.utils.formatUnits(bnBalance, tokenDecimalsFromContract);
+
+    console.log(`helpers.printTokenInfoAndBalanceByAddress: balance for [${this.MY_ADDRESS}]:$${balance};`);
 }
 
 exports.printTokenBalance = async (address, token) => {
@@ -170,10 +204,12 @@ exports.lookupUniswapV3PoolFeeBySymbol = (token1Symbol, token2Symbol) => {
     let value2 = UNISWAP_V3_FEE[key2];
 
     if (value1 === undefined && value2 === undefined) {
-        console.log(`helpers.lookupUniswapV3PoolFee: WARN - fee not found for [${key1}}] pair, returning default fee:${fee};`);
+        console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not found for [${key1}}] pair, will not proceed;`);
+        process.exit(1);
     } else if (value1 !== undefined && value2 !== undefined) {
         if (value1 != value2) {
-            console.log(`helpers.lookupUniswapV3PoolFee: WARN - fee not consistent for [${key1}] pair, returning default fee:${fee};`);
+            console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not consistent for [${key1}] pair, will not proceed;`);
+            process.exit(1);
         } else {
             fee = value1;
         }

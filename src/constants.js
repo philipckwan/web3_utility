@@ -22,7 +22,9 @@ exports.UNISWAP_V3_FEE = {
   WBTC_USDC: 3000,
   WBTC_WETH: 500,
   USDC_USDT: 100,
-  USDC_DAI: 100
+  USDC_DAI: 100,
+  WETH_LINK: 3000,
+  WMATIC_LINK: 500
 };
 
 exports.DODO_LENDING_POOL = {
@@ -141,6 +143,16 @@ exports.ERC20_TOKEN = {
       goerli: "",
       mumbai: "",
       polygon_mainnet: "0x16DFb898cf7029303c2376031392cb9baC450f94"
+    }
+  },
+  QUICK: {
+    symbol: "QUICK",
+    name: "Quickswap",
+    decimals: 18,
+    addressAcrossNetworks: {
+      goerli: "",
+      mumbai: "",
+      polygon_mainnet: "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
     }
   }
 };

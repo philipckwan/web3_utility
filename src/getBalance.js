@@ -13,7 +13,7 @@ async function main() {
         console.log(`node getBalance.js <account(s)> [<token1|all> <token2>...]`);
         return;
     }
-    console.log(`getBalance.main: v1.0;`);
+    console.log(`getBalance.main: v1.2;`);
     await printGeneralInfo();
 
     let arg2 = process.argv[2];
