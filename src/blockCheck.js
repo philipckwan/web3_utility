@@ -26,7 +26,7 @@ init(mode, network);
  curl -X POST https://polygon-rpc.com/ --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
 */
 async function main() {
-    console.log(`blockCheck.main: 1.2;`);
+    console.log(`blockCheck.main: v1.3;`);
     let pollIntervalMSec = 1000;
     setInterval(aPoll, pollIntervalMSec);    
 }
@@ -66,7 +66,12 @@ async function aPoll() {
 
     let endTime = Date.now();
     //let timeDiff = (endTime - startTime) / 1000;
-    flog.debug(`T:[${formatTime(startTime)}->${formatTime(endTime)}]; blockCheck.aPoll: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal};`);
+    let alchemyMinusLocal = blockNumberFromAlchemy - blockNumberFromLocal;
+    let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}]; blockCheck: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal};`;
+    if (alchemyMinusLocal != 0) {
+        msg += ` alchemyMinusLocal:${alchemyMinusLocal};`;
+    }
+    flog.debug(msg);
 }
 
 main();
