@@ -26,52 +26,81 @@ init(mode, network);
  curl -X POST https://polygon-rpc.com/ --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
 */
 async function main() {
-    console.log(`blockCheck.main: v1.3;`);
+    console.log(`blockCheck.main: v1.4;`);
     let pollIntervalMSec = 1000;
     setInterval(aPoll, pollIntervalMSec);    
+}
+
+async function getBlockNumberByProvider(providerName) {
+    //console.log(`getBlockNumberByProvider: providerName:${providerName};`);
+    let blockNumber = -1;
+    if (providerName == "polygonRPC") {
+        let payload = {jsonrpc:"2.0", method:"eth_blockNumber", params:[], id:83};
+        try {
+            let res = await axios.post("https://polygon-rpc.com/", payload);
+            let data = res.data;
+            let currentBlockNumberHex = data.result;
+            blockNumber = parseInt(currentBlockNumberHex, 16);
+        } catch (ex) {
+            flog.debug(`ERROR - unable to connect to polygonRPC;`);
+        }
+    } else if (providerName == "alchemy") {
+        let alchemyProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_POLYGON_MAINNET);
+        try {
+            blockNumber = await alchemyProvider.getBlockNumber();
+        } catch (ex) {
+            flog.debug(`ERROR - unable to connect to alchemyProvider;`);
+        }
+    } else if (providerName == "local") {
+        let localProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_LOCALHOST);
+        try {
+            blockNumber = await localProvider.getBlockNumber();
+        } catch (ex) {
+            flog.debug(`ERROR - unable to connect to localProvider;`);
+        }
+    }
+    return [blockNumber, providerName]
 }
 
 async function aPoll() {
     //console.log(`blockCheck.aPoll: 1.1;`);
     let startTime = Date.now();
 
-    let alchemyProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_POLYGON_MAINNET);
-    let localProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_LOCALHOST);
-
-    let payload = {jsonrpc:"2.0", method:"eth_blockNumber", params:[], id:83};
-
-    let blockNumberFromPolygonRPC = -1;
-    try {
-        let res = await axios.post("https://polygon-rpc.com/", payload);
-        let data = res.data;
-        let currentBlockNumberHex = data.result;
-        blockNumberFromPolygonRPC = parseInt(currentBlockNumberHex, 16);
-    } catch (ex) {
-        flog.debug(`ERROR - unable to connect to polygonRPC;`);
-    }
-
-    let blockNumberFromAlchemy = -1;
-    try {
-        blockNumberFromAlchemy = await alchemyProvider.getBlockNumber();
-    } catch (ex) {
-        flog.debug(`ERROR - unable to connect to alchemyProvider;`);
-    }
+    let blockNumberPromises = []
+    blockNumberPromises.push(getBlockNumberByProvider("polygonRPC"));
+    blockNumberPromises.push(getBlockNumberByProvider("alchemy"));
+    blockNumberPromises.push(getBlockNumberByProvider("local"));
     
-    let blockNumberFromLocal = -1;
-    try {
-        blockNumberFromLocal = await localProvider.getBlockNumber();
-    } catch (ex) {
-        flog.debug(`ERROR - unable to connect to localProvider;`);
-    }
+    Promise.all(blockNumberPromises).then(async (resultsBlockNumberAndProvider) => {
+        let blockNumberFromPolygonRPC = -1;
+        let blockNumberFromAlchemy = -1;
+        let blockNumberFromLocal = -1;
+        for (let i = 0; i < resultsBlockNumberAndProvider.length; i++) {
+            let [blockNumber, providerName] = resultsBlockNumberAndProvider[i];
+            if (providerName == "polygonRPC") {
+                blockNumberFromPolygonRPC = blockNumber;
+            } else if (providerName == "alchemy") {
+                blockNumberFromAlchemy = blockNumber;
+            } else if (providerName == "local") {
+                blockNumberFromLocal = blockNumber;
+            }
+        }
+        let endTime = Date.now();
+        let timeDiff = (endTime - startTime) / 1000;
+        let alchemyMinusLocal = blockNumberFromAlchemy - blockNumberFromLocal;
+        let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}]; blockCheck: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal};`;
+        if (alchemyMinusLocal != 0) {
+            msg += ` alchemyMinusLocal:${alchemyMinusLocal};`;
+        }
+        flog.debug(msg);
+    });
 
-    let endTime = Date.now();
-    //let timeDiff = (endTime - startTime) / 1000;
-    let alchemyMinusLocal = blockNumberFromAlchemy - blockNumberFromLocal;
-    let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}]; blockCheck: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal};`;
-    if (alchemyMinusLocal != 0) {
-        msg += ` alchemyMinusLocal:${alchemyMinusLocal};`;
-    }
-    flog.debug(msg);
+
+
+    
+
+
+    
 }
 
 main();

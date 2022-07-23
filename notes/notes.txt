@@ -5,4 +5,4 @@ DONE-compare the blocknumber with polyscan and local node
 DONE-a simpler constant data structure to store token address and symbol
 -a simpler tool to query token info, current price, and my balance
 DONE(v1.3)-for blockCheck.js, add a diff detector
--for blockCheck.js, run the requests in parallel
+DONE(v1.4)-for blockCheck.js, run the requests in parallel
