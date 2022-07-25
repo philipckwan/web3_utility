@@ -10,18 +10,20 @@ async function getIsProfit(tokens, initialAmountIn, swaps) {
     //let amountMax = 0;
     let tokenIn = null;
     let tokenOut = null;
+    let amountOutSwaps = [];
     for (let i = 0; i < tokens.length - 1; i++) {
         tokenIn = tokens[i];
         tokenOut = tokens[i+1];
-        amountOut = await getMaxSwapAmount(tokenIn[0], tokenOut[0], amountIn, swaps);
+        [amountOut, amountOutSwap] = await getMaxSwapAmount(tokenIn[0], tokenOut[0], amountIn, swaps);
         amountIn = amountOut;
+        amountOutSwaps.push(amountOutSwap[1]);
     }
     let isProfit = amountOut > initialAmountIn;
     let route = "[";
     for (let i = 0; i < tokens.length; i++) {
         route += tokens[i][1];
         if (i != tokens.length - 1) {
-            route += ":";
+            route +=  `-(${amountOutSwaps[i]})`;
         }
     }
     route += "]";

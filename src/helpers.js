@@ -150,7 +150,7 @@ exports.lookupUniswapV3PoolFee = (token1, token2) => {
 }
 
 exports.lookupUniswapV3PoolFeeBySymbol = (token1Symbol, token2Symbol) => {
-    let fee = 9999;
+    let fee = -1;
 
     let key1 = `${token1Symbol}_${token2Symbol}`;
     let key2 = `${token2Symbol}_${token1Symbol}`;
@@ -159,12 +159,12 @@ exports.lookupUniswapV3PoolFeeBySymbol = (token1Symbol, token2Symbol) => {
     let value2 = UNISWAP_V3_FEE[key2];
 
     if (value1 === undefined && value2 === undefined) {
-        console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not found for [${key1}}] pair, will not proceed;`);
-        process.exit(1);
+        console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not found for [${key1}] pair, returning -1;`);
+        return -1;
     } else if (value1 !== undefined && value2 !== undefined) {
         if (value1 != value2) {
-            console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not consistent for [${key1}] pair, will not proceed;`);
-            process.exit(1);
+            console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not consistent for [${key1}] pair, returning -1;`);
+            return -1;
         } else {
             fee = value1;
         }

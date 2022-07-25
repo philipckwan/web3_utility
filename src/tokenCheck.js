@@ -19,7 +19,23 @@ async function main() {
         return;
     }
     let tokenStr = process.argv[2];
-    let foundTokens = findToken(tokenStr);
+    let foundTokens = findTokens(tokenStr);
+
+    if (foundTokens.length == 0) {
+        console.log(`token [${tokenStr}] not found in constantsToken.js;`);
+        if (tokenStr.length == 42 && tokenStr.substring(0,2) == "0x") {
+            let tokenAddressAssumed = tokenStr;
+            console.log(`assume [${tokenAddressAssumed}] is a token address; now attempt to find from chain...`);
+            let tokenContract = new ethers.Contract(tokenAddressAssumed, ERC20ABI, getProvider());
+            try {
+                let tokenSymbolFromContract = await tokenContract.symbol();
+                console.log(`found token [${tokenSymbolFromContract}] from chain by address...`);
+                foundTokens.push([tokenAddressAssumed, tokenSymbolFromContract]);
+            } catch {
+                console.log(`this token is not found in chain`);
+            }
+        }
+    }
 
     for(let aFoundToken of foundTokens) {
         let aFoundTokenAddress = aFoundToken[0];

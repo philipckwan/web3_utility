@@ -10,8 +10,16 @@ exports.TOKENS = [
     ["0xb33eaad8d922b1083446dc23f610c2567fb5180f", "UNI"],
     ["0x16DFb898cf7029303c2376031392cb9baC450f94", "DMA"],
     ["0x831753DD7087CaC61aB5644b308642cc1c33Dc13", "QUICK"],
-    ["",""],
-    ["",""]
+    ["0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a", "SUSHI"],
+    ["0x7Ff54B5C384C9F3A3FeCE70e150D2Ce2D70DA6f7", "TBAC"],
+    ["0xadBe0eac80F955363f4Ff47B0f70189093908c04", "XMT"],
+    ["0xE2Aa7db6dA1dAE97C5f5C6914d285fBfCC32A128", "PAR"],
+    ["0xD6DF932A45C0f255f85145f286eA0b292B21C90B", "AAVE"],
+    ["0x82a0E6c02b91eC9f6ff943C0A933c03dBaa19689", "WNT"],
+    ["0x516cdAe319F4B0E31A29c9572bc3F255679d7a0F", "DDD"],
+    ["", ""],
+    ["", ""],
+    ["", ""],
 ]
 
 exports.findTokens = (tokenStr) => {
@@ -21,7 +29,8 @@ exports.findTokens = (tokenStr) => {
         if (matchIdx >= 0) {
             foundTokens.push(aToken);
         } else {
-            matchIdx = aToken[1].indexOf(tokenStr.toUpperCase());
+            let tokenSymbolWithPrefix = `@${aToken[1]}`;
+            matchIdx = tokenSymbolWithPrefix.indexOf(tokenStr.toUpperCase());
             if (matchIdx >= 0) {
                 foundTokens.push(aToken);
             }

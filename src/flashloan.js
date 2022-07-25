@@ -100,6 +100,13 @@ async function passRoutes(tokenContracts, swaps) {
     let tokenInAddress = tokenContracts[i].address;
     let tokenOutAddress = tokenContracts[i+1].address;
     let swap = swaps[i];
+    if (swap.protocol == 0) {
+      let fee = lookupUniswapV3PoolFeeBySymbol(await tokenContracts[i].symbol(), await tokenContracts[i+1].symbol());
+      if (fee == -1) {
+        console.log(`flashloan.main: ERROR - lookupUniswapV3PoolFeeBySymbol returns -1;`);
+        process.exit(1);
+      }
+    }
     let aHop = {
       protocol: swap.protocol,
       data: (swap.protocol == 0)? 
