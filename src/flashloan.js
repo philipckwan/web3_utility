@@ -3,10 +3,7 @@ const {ERC20_TOKEN, UNISWAP_V3_ROUTER_ADDRESS, SWAP_ROUTER, DODO_LENDING_POOL} =
 const {init, printGeneralInfo, formatTime, getProvider, getConnectedWallet, MY_WALLET_SECRET, getTokenContract, lookupUniswapV3PoolFeeBySymbol} = require('./helpers');
 const FLASHLOAN_ABI = require("../abis/Flashloan.json");
 
-
-const network = "polygon_mainnet";
-const mode="local";
-init(mode, network);
+init();
 
 async function main() {
     console.log(`${formatTime(Date.now())}|arbTry.main: v1.0;`);

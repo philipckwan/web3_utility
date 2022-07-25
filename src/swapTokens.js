@@ -1,10 +1,7 @@
-const {ethers} = require('ethers');
 const {ERC20_TOKEN, WHALE_A_WALLET_SECRET} = require('./constants');
 const {init, getConnectedWallet, MY_WALLET_SECRET, swapTokenToToken} = require('./helpers');
 
-const network = "polygon_mainnet";
-const mode="local";
-init(mode, network);
+init();
 
 async function main() {
     // arguments are being passed

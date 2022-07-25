@@ -2,9 +2,7 @@ const {ethers} = require('ethers');
 const {WHALE_A_ADDRESS, WHALE_A_WALLET_SECRET} = require('./constants');
 const {init, getConnectedWallet, MY_ADDRESS, MY_WALLET_SECRET, transferNative} = require('./helpers');
 
-const network = "polygon_mainnet";
-const mode="local";
-init(mode, network);
+init();
 
 async function main() {
     // arguments are being passed

@@ -5,83 +5,34 @@ const {UNISWAP_V3_FEE, ERC20_TOKEN, UNISWAP_V3_ROUTER_ADDRESS} = require('./cons
 require('dotenv').config();
 const {abi:UNISWAP_V3_ROUTER_ABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json');
 
-exports.init = (mode, network) => {
+exports.MY_ADDRESS = process.env.WALLET_ADDRESS;
+exports.MY_WALLET_SECRET = process.env.WALLET_SECRET;
 
-    console.log(`helpers.init: 1.0; mode:${mode}; network:${network};`);
+exports.init = () => {
+
+    console.log(`helpers.init: 1.0; mode:${process.env.IS_LOCAL}; network:${process.env.USE_NETWORK};`);
     if (this.provider == null) {
         this.tokenMap = new Map();
-        this.network = network;
-        this.mode = mode;
+        this.network = process.env.USE_NETWORK;
+        this.mode = process.env.IS_LOCAL;
         let apiUrl = null;
-        if (network == "mumbai") {
+        if (this.network == "mumbai") {
             apiUrl = process.env.API_URL_MUMBAI;
-        } else if (network == "goerli") {
+        } else if (this.network == "goerli") {
             apiUrl = process.env.API_URL_GOERLI;
-        } else if (network == "polygon_mainnet") {
+        } else if (this.network == "polygon_mainnet") {
             apiUrl = process.env.API_URL_POLYGON_MAINNET;
         } else {
             console.log(`helpers.init: ERROR - unknown network;`);
             process.exit();
         }
-        if (mode == "local") {
+        if (this.mode == "local") {
             // override the apiUrl is mode == "local"
             apiUrl = process.env.API_URL_LOCALHOST;
         } 
         //this.provider = new ethers.providers.JsonRpcProvider(apiUrl);
         this.provider = new ethers.providers.StaticJsonRpcProvider(apiUrl);
     }
-}
-
-exports.MY_ADDRESS = process.env.WALLET_ADDRESS;
-exports.MY_WALLET_SECRET = process.env.WALLET_SECRET;
-
-exports.parseArgumentForAmount = (arg) => {
-    let isAmount = false;
-    let amount = 0;
-    if (arg.substring(0,2) == "-a") {
-        isAmount = true;
-        amount = Number(arg.substring(2));
-    }
-    return [isAmount, amount];
-}
-
-exports.parseArgumentForSwaps = (arg) => {
-    let isSwaps = false;
-    let swaps = [];
-    if (arg.substring(0,2) == "-s") {
-        isSwaps = true;
-        for (let i = 2; i < arg.length; i++) {
-            let aSwapChar = arg.substring(i, i+1);
-            switch(aSwapChar) {
-                case "U":
-                    swaps.push("uniswapV3");
-                    break;
-                case "Q":
-                    swaps.push("POLYGON_QUICKSWAP");
-                    break;
-                case "S":
-                    swaps.push("POLYGON_SUSHISWAP");
-                    break;
-            }
-        }
-    }
-    return [isSwaps, swaps];
-}
-
-exports.resolveTokenSymbolAndAddress = async (input) => {
-    let tokenSymbol = "n/a";
-    let tokenAddress = "0xaaaa";
-    if (input.substring(0,2) == "0x") {
-        // input is a token address
-        tokenAddress = input;
-        let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
-        tokenSymbol = await tokenContract.symbol();
-    } else {
-        // input is a token symbol
-        tokenSymbol = input.toUpperCase();
-        tokenAddress = await this.getTokenContract(ERC20_TOKEN[tokenSymbol]).address;
-    }
-    return [tokenSymbol, tokenAddress];
 }
 
 exports.formatTime = (d) => {
@@ -136,6 +87,7 @@ exports.printNativeBalance = async (address) => {
     console.log(`helpers.printNativeBalance: address:[${address}]; nativeBalance:$${nativeBalance};`);
 }
 
+/*
 exports.printTokenInfoAndBalanceByAddress = async (tokenAddress) => {
     let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
     let tokenSymbolFromContract = await tokenContract.symbol();
@@ -148,6 +100,7 @@ exports.printTokenInfoAndBalanceByAddress = async (tokenAddress) => {
 
     console.log(`helpers.printTokenInfoAndBalanceByAddress: balance for [${this.MY_ADDRESS}]:$${balance};`);
 }
+*/
 
 exports.printTokenBalance = async (address, token) => {
     let tokenContract = this.getTokenContract(token);
@@ -163,6 +116,7 @@ exports.printTokenBalance = async (address, token) => {
     console.log(`helpers.printTokenBalance: address:[${address}]; token:[${tokenSymbolFromContract}] $${balance};`);
 }
 
+/*
 exports.printTokenStatus = async (address, token) => {
     let tokenAddressFromConstants = token.addressAcrossNetworks[this.network];
     console.log(`helpers.printTokenStatus: from constants: token:${token.symbol}; address:${tokenAddressFromConstants}; decimals:${token.decimals};`);
@@ -185,6 +139,7 @@ exports.printTokenStatus = async (address, token) => {
 exports.getTokenMap = () => {
     return this.tokenMap;
 }
+*/
 
 exports.getProvider = () => {
     return this.provider;

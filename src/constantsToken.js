@@ -13,3 +13,29 @@ exports.TOKENS = [
     ["",""],
     ["",""]
 ]
+
+exports.findTokens = (tokenStr) => {
+    let foundTokens = [];
+    for (let aToken of this.TOKENS) {
+        let matchIdx = aToken[0].toUpperCase().indexOf(tokenStr.toUpperCase());
+        if (matchIdx >= 0) {
+            foundTokens.push(aToken);
+        } else {
+            matchIdx = aToken[1].indexOf(tokenStr.toUpperCase());
+            if (matchIdx >= 0) {
+                foundTokens.push(aToken);
+            }
+        }
+        //console.log(`aToken: addr:${aToken[0]}; symb:${aToken[1]};`);
+    }
+    return foundTokens;
+}
+
+exports.findOneToken = (tokenStr) => {
+    let foundTokens = this.findTokens(tokenStr);
+    if (foundTokens.length != 1) {
+        console.log(`constantsToken.findOneToken: ERROR - not able to find exactly 1 token, found ${foundTokens.length} instead;`);
+        return undefined;
+    }
+    return foundTokens[0];
+}

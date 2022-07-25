@@ -1,7 +1,8 @@
 const {ethers} = require('ethers');
 const {abi:quoterABI} = require("@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json");
 var UniswapV2Router = require("../abis/IUniswapV2Router02.json");
-const {getProvider} = require("./helpers")
+const ERC20ABI = require('../abis/abi.json');
+const {getProvider, lookupUniswapV3PoolFeeBySymbol} = require("./helpers")
 
 exports.getPriceOnUniV3 = async (tokenIn, tokenOut, amountIn, fee) => {
   console.log(`price.getPriceOnUniV3: fee:${fee};`);
@@ -41,3 +42,33 @@ exports.getPriceOnUniV2 = async (tokenIn, tokenOut, amountIn, routerAddress) => 
   }
   return amountsOut[1];
 };
+
+exports.queryPrice = async (tokenInAddress, tokenOutAddress, amountIn, swap) => {
+  let tokenInContract = new ethers.Contract(tokenInAddress, ERC20ABI, getProvider());
+  let tokenOutContract = new ethers.Contract(tokenOutAddress, ERC20ABI, getProvider());
+  let bnAmountIn = ethers.utils.parseUnits(amountIn.toString(), await tokenInContract.decimals());
+  let bnAmountOut = null;
+  if (swap[1] == "uniswapV3") {
+      let fee = lookupUniswapV3PoolFeeBySymbol(await tokenInContract.symbol(), await tokenOutContract.symbol());
+      bnAmountOut = await this.getPriceOnUniV3(tokenInContract.address, tokenOutContract.address, bnAmountIn, fee);
+  } else {
+      bnAmountOut = await this.getPriceOnUniV2(tokenInContract.address, tokenOutContract.address, bnAmountIn, swap[0]);
+  }
+  //console.log(`quoter.printPriceAndRateFromSwap: 5.0;`);
+  let amountOut = Number(ethers.utils.formatUnits(bnAmountOut, await tokenOutContract.decimals()));
+  rate = amountOut / amountIn;
+  console.log(`quoter: [${swap[1]}]: [${await tokenInContract.symbol()}]->[${await tokenOutContract.symbol()}]:$${amountIn}->$${amountOut.toFixed(4)};%:${rate};`);
+  return amountOut;
+}
+
+exports.getMaxSwapAmount = async (tokenInAddress, tokenOutAddress, amountIn, swaps) => {
+  let amountOut = 0;
+  let amountMax = 0;
+  for (let aSwap of swaps) {
+      amountOut = await this.queryPrice(tokenInAddress, tokenOutAddress, amountIn, aSwap);
+      if (amountOut > amountMax) {
+          amountMax = amountOut;
+      }
+  }
+  return amountMax;
+}

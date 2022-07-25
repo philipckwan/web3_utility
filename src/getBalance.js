@@ -1,9 +1,7 @@
 const {ERC20_TOKEN, WHALE_A_ADDRESS} = require('./constants');
-const {init, printGeneralInfo, printNativeBalance, printTokenStatus, getTokenMap, MY_ADDRESS , printTokenBalance} = require('./helpers');
+const {init, printGeneralInfo, printNativeBalance, MY_ADDRESS , printTokenBalance} = require('./helpers');
 
-const network = "polygon_mainnet";
-const mode="local";
-init(mode, network);
+init();
 
 async function main() {
     // arguments are being passed

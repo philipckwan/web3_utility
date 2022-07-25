@@ -1,86 +1,63 @@
-const {ethers} = require('ethers');
-const {ERC20_TOKEN, SWAP_ROUTER} = require('./constants');
-const {init, getTokenContractByAddress, lookupUniswapV3PoolFeeBySymbol, printGeneralInfo, parseArgumentForAmount, parseArgumentForSwaps, resolveTokenSymbolAndAddress} = require('./helpers');
-const {getPriceOnUniV3, getPriceOnUniV2} = require("./price");
-
-const network = "polygon_mainnet";
-const mode="local";
-init(mode, network);
-
-async function printPriceAndRateFromSwap(tokenInAddress, tokenOutAddress, amountIn, swapName="uniswapV3") {
-    //console.log(`quoter.printPriceAndRateFromSwap: 1.0; tokenIn:${tokenInAddress}; tokenOut:${tokenOutAddress};`);
-    let tokenInContract = getTokenContractByAddress(tokenInAddress);
-    let tokenOutContract = getTokenContractByAddress(tokenOutAddress);
-    //console.log(`__tokenOutContract symbol:${await tokenOutContract.symbol()}; decimals:${await tokenOutContract.decimals()};`);
-    let bnAmountIn = ethers.utils.parseUnits(amountIn.toString(), await tokenInContract.decimals());
-    let bnAmountOut = null;
-    if (swapName == "uniswapV3") {
-        //console.log(`quoter.printPriceAndRateFromSwap: 3.0; swap:${swapName};`);
-        let fee = lookupUniswapV3PoolFeeBySymbol(await tokenInContract.symbol(), await tokenOutContract.symbol());
-        bnAmountOut = await getPriceOnUniV3(tokenInContract.address, tokenOutContract.address, bnAmountIn, fee);
-    } else {
-        //console.log(`quoter.printPriceAndRateFromSwap: 4.0; swap:${swapName};`);
-        let swapAddress = SWAP_ROUTER[swapName].address;
-        bnAmountOut = await getPriceOnUniV2(tokenInContract.address, tokenOutContract.address, bnAmountIn, swapAddress);
-    }
-    //console.log(`quoter.printPriceAndRateFromSwap: 5.0;`);
-    let amountOut = ethers.utils.formatUnits(bnAmountOut, await tokenOutContract.decimals());
-    rate = amountOut / amountIn;
-    console.log(`quoter.printPriceAndRateFromSwap: [${swapName}]: [${await tokenInContract.symbol()}]->[${await tokenOutContract.symbol()}]:$${amountIn}->$${amountOut};%:${rate};`);
-    return Number(amountOut);
-}
-
-async function getMaxSwapAmount(tokenInAddress, tokenOutAddress, amountIn, swaps) {
-    //console.log(`quoter.getMaxSwapAmount: 1.0;`);
-    //let swaps = ["POLYGON_QUICKSWAP"];
-    //let swaps = ["uniswapV3", "POLYGON_QUICKSWAP", "POLYGON_SUSHISWAP"];
-    let amountOut = 0;
-    let amountMax = 0;
-    for (let aSwap of swaps) {
-        amountOut = await printPriceAndRateFromSwap(tokenInAddress, tokenOutAddress, amountIn, aSwap);
-        if (amountOut > amountMax) {
-            amountMax = amountOut;
-        }
-    }
-    //console.log(`quoter.getMaxSwapAmount: 2.0;`);
-    return amountMax;
-}
+const {findOneToken} = require('./constantsToken');
+const {SWAPS, findASwapByPrefix} = require('./constantsSwap');
+const {init} = require("./helpers");
+const {getMaxSwapAmount} = require("./price");
+init();
 
 async function main() {
-    console.log(`quoter.main: 1.4;`);
-    await printGeneralInfo();
+    //console.log(`quoter.main: 1.1;`);
 
-    // arguments are being passed
-    // node quoter.js <tokenFrom> <tokenTo> <amountFrom>
-    if (process.argv.length < 5) {
-        console.log(`quoter.main: ERROR - arguments wrong;`);
-        console.log(`node quoter.js -s<swaps> -a<amountIn> <tokenFrom> <tokenTo>`);
+    if (process.argv.length < 3) {
+        console.log(`quoter: ERROR - arguments wrong;`);
+        console.log(`node quoter.js [-s<swaps>] [-a<amount>] [-r] <token1> [token2]`);
+        console.log(`arguments: -r for reverse swap, i.e. swap 10000 wmatic to usdc`);
+        console.log(`is specifed <token2>, then <token1> is the fromToken, while <token2> is the toToken`);
         console.log(`e.g:`);
-        console.log(`node quoter.js -sUQS -a2000 usdc wmatic`);
-        return;
-    }
-    let [isSwap, swaps] = parseArgumentForSwaps(process.argv[2]);
-
-    let [isAmount, amountFrom] = parseArgumentForAmount(process.argv[3]);
-
-    if (!isSwap || !isAmount) {
-        console.log(`quoter.main: ERROR -s and -a not defined properly;`);
+        console.log(`node quoter.js -sUQS -a10000 wmatic`);
+        console.log(`the above line uses 3 swaps(uniswapV3, quickswap, sushiswap), swap amount $10000 usdc, for WMATIC`);
+        console.log(``);
+        console.log(`node quoter.js wmatic`);
+        console.log(`the above line defaults to "node quoter.js -sALL -a10000 wmatic`);
         return;
     }
 
-    let fromSymbolOrAddress = process.argv[4];
-    let [tokenFromSymbol, tokenFromAddress] = await resolveTokenSymbolAndAddress(fromSymbolOrAddress);
-    console.log(`quoter.main: tokenFrom:[${tokenFromSymbol}:${tokenFromAddress}];`);
+    let swaps = SWAPS;
+    let tokenIn = findOneToken("USDC");
+    let amount = 10000;
+    let tokenOut = undefined;
+    let isReverse = false;
+    for (let i = 2; i < process.argv.length; i++) {
+        if (process.argv[i].substring(0,2) == "-s") {
+            swaps = [];
+            if ("ALL" == process.argv[i].substring(2)) {
+                swaps = SWAPS;
+            } else {
+                for (let j = 2; j < process.argv[i].length; j++) {
+                    swaps.push(findASwapByPrefix(process.argv[i].substring(j,j+1)));
+                }
+            }
+        } else if (process.argv[i].substring(0,2) == "-a") {
+            amount = Number(process.argv[i].substring(2));
+        } else if (process.argv[i].substring(0,2) == "-r") {
+            isReverse = true;
+        } else {
+            if (tokenOut == undefined) {
+                tokenOut = findOneToken(process.argv[i]);
+            } else {
+                tokenIn = tokenOut;
+                tokenOut = findOneToken(process.argv[i]);
+            }
+        }
+    }    
+    let maxAmountOut = 0;
+    if (isReverse) {
+        maxAmountOut = await getMaxSwapAmount(tokenOut[0], tokenIn[0], amount, swaps);
+    } else {
+        maxAmountOut = await getMaxSwapAmount(tokenIn[0], tokenOut[0], amount, swaps);
+    }
+    console.log(`quoter: maxAmountOut:${maxAmountOut};`);
 
-    let toSymbolOrAddress = process.argv[5];
-    let [tokenToSymbol, tokenToAddress] = await resolveTokenSymbolAndAddress(toSymbolOrAddress);
-    console.log(`quoter.main: tokenTo:[${tokenToSymbol}:${tokenToAddress}];`);
-
-    let maxAmountOut = await getMaxSwapAmount(tokenFromAddress, tokenToAddress, amountFrom, swaps);
-
-    //amountOut = await getMaxSwapAmountMultiple([token0, token2, token4, token2, token0], amountIn);
-    console.log(`quoter.main: maxAmountOut:${maxAmountOut};`);
-    
 }
 
 main();
+   

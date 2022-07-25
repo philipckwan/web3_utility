@@ -17,9 +17,7 @@ log4js.configure({
     },
   });
 
-const network = "polygon_mainnet";
-const mode="remote";
-init(mode, network);
+init();
 
 /*
  compare the blocknumber from polygon rpc vs a node
@@ -27,6 +25,12 @@ init(mode, network);
 */
 async function main() {
     console.log(`blockCheck.main: v1.4;`);
+
+    if (process.argv.length == 3 && process.argv[2] == "-once") {
+        aPoll();
+        return;
+    }
+    
     let pollIntervalMSec = 1000;
     setInterval(aPoll, pollIntervalMSec);    
 }
@@ -93,14 +97,7 @@ async function aPoll() {
             msg += ` alchemyMinusLocal:${alchemyMinusLocal};`;
         }
         flog.debug(msg);
-    });
-
-
-
-    
-
-
-    
+    });    
 }
 
 main();
