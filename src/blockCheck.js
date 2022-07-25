@@ -71,9 +71,9 @@ async function aPoll() {
     let startTime = Date.now();
 
     let blockNumberPromises = []
+    blockNumberPromises.push(getBlockNumberByProvider("local"));
     blockNumberPromises.push(getBlockNumberByProvider("polygonRPC"));
     blockNumberPromises.push(getBlockNumberByProvider("alchemy"));
-    blockNumberPromises.push(getBlockNumberByProvider("local"));
     
     Promise.all(blockNumberPromises).then(async (resultsBlockNumberAndProvider) => {
         let blockNumberFromPolygonRPC = -1;
