@@ -31,7 +31,7 @@ async function main() {
         return;
     }
     
-    let pollIntervalMSec = 1000;
+    let pollIntervalMSec = Number(process.env.BLOCKCHECK_INTERVAL_MSEC);
     setInterval(aPoll, pollIntervalMSec);    
 }
 
