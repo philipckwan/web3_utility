@@ -1,6 +1,8 @@
 const {findOneToken} = require('./constantsToken');
+const {ethers} = require('ethers');
 const {SWAPS, findASwapByPrefix} = require('./constantsSwap');
-const {init} = require("./helpers");
+const {init, getProvider} = require("./helpers");
+const ERC20ABI = require('../abis/abi.json');
 const {getMaxSwapAmount} = require("./price");
 init();
 
@@ -9,7 +11,7 @@ async function main() {
 
     if (process.argv.length < 3) {
         console.log(`quoter: ERROR - arguments wrong;`);
-        console.log(`node quoter.js [-s<swaps>] [-a<amount>] [-r] <tokenFrom> [<tokenTo>]`);
+        console.log(`node quoter.js [-s<swaps>] [-a<amount>] [-r] <tokenFrom> [<tokenTo1> <tokenTo2>...]`);
         console.log(`node quoter.js -sUQS -a10000 wmatic`);
         console.log(`the above line means 3 swaps(uniswapV3, quickswap, sushiswap), swap amount $10000 WMATIC to USDC`);
         console.log(``);
@@ -26,6 +28,8 @@ async function main() {
     let amount = 1;
     let tokenFrom = undefined;
     let isReverse = false;
+    let isFromAll = false;
+    let tokens = [];
     for (let i = 2; i < process.argv.length; i++) {
         if (process.argv[i].substring(0,2) == "-s") {
             swaps = [];
@@ -37,26 +41,48 @@ async function main() {
                 }
             }
         } else if (process.argv[i].substring(0,2) == "-a") {
-            amount = Number(process.argv[i].substring(2));
+            if (process.argv[i].substring(2) == "ALL") {
+                isFromAll = true;
+            } else {
+                amount = Number(process.argv[i].substring(2));
+            }
         } else if (process.argv[i].substring(0,2) == "-r") {
             isReverse = true;
         } else {
-            if (tokenFrom == undefined) {
-                tokenFrom = findOneToken(process.argv[i]);
-            } else {
-                tokenTo = findOneToken(process.argv[i]);
-            }
+            tokens.push(findOneToken(process.argv[i]));
         }
     }    
     let maxAmountOut = 0;
     if (isReverse) {
-        let tmpToken = tokenFrom;
-        tokenFrom = tokenTo;
-        tokenTo = tmpToken;
+        tokens.reverse();
     }
-    [maxAmountOut, maxAmountSwap] = await getMaxSwapAmount(tokenFrom[0], tokenTo[0], amount, swaps);
+    if (tokens.length < 2) {
+        console.log(`quoter: ERROR - less than 2 tokens, tokens.length:${tokens.length};`);
+    }
+    if (isFromAll) {
+        let tokenFromContract = new ethers.Contract(tokens[0][0], ERC20ABI, getProvider());
+        let bnTokenFromBalance = await tokenFromContract.balanceOf(process.env.WALLET_ADDRESS);
+        amount = Number(ethers.utils.formatUnits(bnTokenFromBalance, await tokenFromContract.decimals()));
+    }
 
-    console.log(`quoter: [${tokenFrom[1]}]->[${tokenTo[1]}]; $${amount}->$${maxAmountOut}; swap[${maxAmountSwap[1]}]`);
+    let amountIn = amount;
+    let amountOutSwaps = [];
+    for (let i = 0; i < tokens.length - 1; i++) {
+        [amountOut, amountOutSwap] = await getMaxSwapAmount(tokens[i][0], tokens[i+1][0], amountIn, swaps);
+        amountIn = amountOut;
+        amountOutSwaps.push(amountOutSwap[1]);
+    }
+    let route = "[";
+    for (let i = 0; i < tokens.length; i++) {
+        route += tokens[i][1];
+        if (i != tokens.length - 1) {
+            route +=  `-(${amountOutSwaps[i]})`;
+        }
+    }
+    route += "]";
+    //[maxAmountOut, maxAmountSwap] = await getMaxSwapAmount(tokenFrom[0], tokenTo[0], amount, swaps);
+    console.log(`quoter: ${route} $${amountOut.toFixed(2)};`)
+    //console.log(`quoter: [${tokenFrom[1]}]->[${tokenTo[1]}]; $${amount}->$${maxAmountOut}; swap[${maxAmountSwap[1]}]`);
 
 }
 

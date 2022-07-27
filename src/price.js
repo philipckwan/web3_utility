@@ -64,7 +64,7 @@ exports.queryPrice = async (tokenInAddress, tokenOutAddress, amountIn, swap) => 
   //console.log(`quoter.printPriceAndRateFromSwap: 5.0;`);
   let amountOut = Number(ethers.utils.formatUnits(bnAmountOut, await tokenOutContract.decimals()));
   rate = amountOut / amountIn;
-  console.log(`quoter: [${swap[1]}]: [${await tokenInContract.symbol()}]->[${await tokenOutContract.symbol()}]:$${amountIn}->$${amountOut.toFixed(4)};%:${rate};`);
+  console.log(`price: [${swap[1].padStart(10)}]: [${(await tokenInContract.symbol()).padStart(6)}]->[${(await tokenOutContract.symbol()).padStart(6)}]:$${amountIn.toFixed(4)}->$${amountOut.toFixed(4)}; %:${rate.toFixed(4)};`);
   return amountOut;
 }
 

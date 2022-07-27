@@ -18,10 +18,12 @@ exports.init = () => {
         let apiUrl = null;
         if (this.network == "mumbai") {
             apiUrl = process.env.API_URL_MUMBAI;
-        } else if (this.network == "goerli") {
+        } else if (this.network == "ethereum_goerli") {
             apiUrl = process.env.API_URL_GOERLI;
         } else if (this.network == "polygon_mainnet") {
             apiUrl = process.env.API_URL_POLYGON_MAINNET;
+        } else if (this.network == "ethereum_mainnet") {
+            apiUrl = process.env.API_URL_ETHEREUM_MAINNET;
         } else {
             console.log(`helpers.init: ERROR - unknown network;`);
             process.exit();
@@ -115,31 +117,6 @@ exports.printTokenBalance = async (address, token) => {
 
     console.log(`helpers.printTokenBalance: address:[${address}]; token:[${tokenSymbolFromContract}] $${balance};`);
 }
-
-/*
-exports.printTokenStatus = async (address, token) => {
-    let tokenAddressFromConstants = token.addressAcrossNetworks[this.network];
-    console.log(`helpers.printTokenStatus: from constants: token:${token.symbol}; address:${tokenAddressFromConstants}; decimals:${token.decimals};`);
-    if (tokenAddressFromConstants == null || tokenAddressFromConstants.length == 0) {
-        console.log(`helpers.printTokenStatus: ERROR - token address not set; address:[${tokenAddressFromConstants}];`);
-        return;
-    }
-    let tokenContract = this.getTokenContract(token);
-    let tokenSymbolFromContract = await tokenContract.symbol();
-    let tokenDecimalsFromContract = await tokenContract.decimals();
-    console.log(`helpers.printTokenStatus:  from contract: token:${tokenSymbolFromContract}; address:${tokenContract.address}; decimals:${tokenDecimalsFromContract};`);
-    bnBalance = await tokenContract.balanceOf(address);
-    balance = ethers.utils.formatUnits(bnBalance, tokenDecimalsFromContract);
-    if (token.symbol != tokenSymbolFromContract) {
-        console.log(`helpers.printTokenStatus: WARN - token symbol mismatch between constants[${token.symbol}] and contract[${tokenSymbolFromContract}];`)
-    }
-    console.log(`helpers.printTokenStatus: token:[${tokenSymbolFromContract}] $${balance};`);
-}
-
-exports.getTokenMap = () => {
-    return this.tokenMap;
-}
-*/
 
 exports.getProvider = () => {
     return this.provider;
@@ -250,51 +227,4 @@ exports.wrapNative = async (fromWallet, amountFrom) => {
     await fromWallet.sendTransaction(param);
 
     console.log(`helpers.wrapNative: 9.0;`);
-};
-
-exports.swapTokenToToken = async (fromWallet, toAddress, tokenFrom, tokenTo, amountFrom) => {
-    console.log(`helpers.swapTokenToToken: 1.0;`);
-
-    const bnAmountFrom = ethers.utils.parseUnits(amountFrom.toString(), tokenFrom.decimals);
-
-    let tokenFromContract = this.getTokenContract(tokenFrom);
-    let tokenToContract = this.getTokenContract(tokenTo);
-    let swapFee = this.lookupUniswapV3PoolFee(tokenFrom, tokenTo);
-
-    const approvalTx = await tokenFromContract.connect(fromWallet).approve(UNISWAP_V3_ROUTER_ADDRESS, bnAmountFrom);
-    const approvalTxReceipt = await approvalTx.wait();
-    //console.log(`helpers.swapTokenToToken: ___approvalTxReceipt___BELOW___;`);
-    //console.log(approvalTxReceipt);
-    //console.log(`helpers.swapTokenToToken: ___approvalTxReceipt___ABOVE___;`);
-
-    
-    const swapRouterContract = new ethers.Contract(
-        UNISWAP_V3_ROUTER_ADDRESS,
-        UNISWAP_V3_ROUTER_ABI,
-        this.provider
-    );
-    
-    
-    const transaction = await swapRouterContract.connect(fromWallet).exactInputSingle(
-        {
-            tokenIn: tokenFromContract.address,
-            tokenOut: tokenToContract.address,
-            fee: swapFee,
-            recipient: toAddress,
-            deadline: Math.floor(Date.now() / 1000) + (60 * 10),
-            amountIn: bnAmountFrom,
-            amountOutMinimum: 0,
-            sqrtPriceLimitX96: 0
-        },
-        {
-            gasLimit: ethers.utils.hexlify(14000000)
-        }
-    );
-    
-    const transactionReceipt = await transaction.wait();
-    //console.log(`helpers.swapTokenToToken: ___transactionReceipt___BELOW___;`);
-    //console.log(transactionReceipt);
-    //console.log(`helpers.swapTokenToToken: ___transactionReceipt___ABOVE___;`);
-        
-    console.log(`helpers.swapTokenToToken: 9.0;`);
 };

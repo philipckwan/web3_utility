@@ -27,7 +27,7 @@ async function getIsProfit(tokens, initialAmountIn, swaps) {
         }
     }
     route += "]";
-    console.log(`arbCheck.getIsProfit: isProfit:${isProfit}; ${route} $${amountOut.toFixed(2)};`)
+    console.log(`arbCheck.getIsProfit: isProfit:${isProfit}; ${route} $${amountOut.toFixed(2)};`);
 }
 
 async function main() {
