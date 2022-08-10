@@ -39,10 +39,11 @@ exports.init = () => {
 
 exports.formatTime = (d) => {
     let aDate = new Date(d);
+    let hour = aDate.getHours();
     let minute = aDate.getMinutes();
     let second = aDate.getSeconds();
     let mSec = aDate.getMilliseconds();
-    return `${minute.toString().padStart(2,"0")}:${second.toString().padStart(2,"0")}:${mSec.toString().padStart(3,"0")}`;
+    return `${hour.toString().padStart(2,"0")}:${minute.toString().padStart(2,"0")}:${second.toString().padStart(2,"0")}:${mSec.toString().padStart(3,"0")}`;
 }
 
 exports.getConnectedWallet = (walletSecret) => {
