@@ -92,10 +92,8 @@ async function aPoll() {
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
         let alchemyMinusLocal = blockNumberFromAlchemy - blockNumberFromLocal;
-        let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}]; blockCheck: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal};`;
-        if (alchemyMinusLocal != 0) {
-            msg += ` alchemyMinusLocal:${alchemyMinusLocal};`;
-        }
+        let alchemyMinusLocalStr = alchemyMinusLocal > 0 ? `+${alchemyMinusLocal}` : `${alchemyMinusLocal}`;
+        let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}]; blockCheck: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal}; alchemyMinusLocal:${alchemyMinusLocalStr};`;
         flog.debug(msg);
     });    
 }

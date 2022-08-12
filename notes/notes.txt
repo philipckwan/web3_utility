@@ -10,3 +10,4 @@ DONE(27/7)-multiple hops for quoter, e.g. DMA only can swap for USDT and WMATIC,
 -add dodoRouter to swap router
 -add a command line argument for env, i.e. -elocal vs -epolygon_mainnet, -emumbai, -eeth_mainnet
 -separate script that requires signing (i.e. private key), vs just need wallet address
+DONE(12/8)-blockCheck: alchemyMinusLocal, output 0 and add '+' sign for better statistics

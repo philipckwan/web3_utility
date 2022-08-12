@@ -24,9 +24,7 @@ async function main() {
     }
 
     let swaps = SWAPS;
-    let tokenTo = findOneToken("USDC");
     let amount = 1;
-    let tokenFrom = undefined;
     let isReverse = false;
     let isFromAll = false;
     let tokens = [];
@@ -52,12 +50,12 @@ async function main() {
             tokens.push(findOneToken(process.argv[i]));
         }
     }    
-    let maxAmountOut = 0;
     if (isReverse) {
         tokens.reverse();
     }
     if (tokens.length < 2) {
         console.log(`quoter: ERROR - less than 2 tokens, tokens.length:${tokens.length};`);
+        return;
     }
     if (isFromAll) {
         let tokenFromContract = new ethers.Contract(tokens[0][0], ERC20ABI, getProvider());
