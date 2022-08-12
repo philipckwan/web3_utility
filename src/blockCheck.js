@@ -19,6 +19,12 @@ log4js.configure({
 
 init();
 
+const alchemyProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_POLYGON_MAINNET);
+const localProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_LOCALHOST);
+
+let alchemyBlockNum = -1;
+let localBlockNum = -1;
+
 /*
  compare the blocknumber from polygon rpc vs a node
  curl -X POST https://polygon-rpc.com/ --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
@@ -31,8 +37,51 @@ async function main() {
         return;
     }
     
-    let pollIntervalMSec = Number(process.env.BLOCKCHECK_INTERVAL_MSEC);
-    setInterval(aPoll, pollIntervalMSec);    
+    let pollAlchemyIntervalMSec = Number(process.env.BLOCKCHECK_ALCMY_INTERVAL_MSEC);
+    let pollLocalIntervalMSec = Number(process.env.BLOCKCHECK_LOCAL_INTERVAL_MSEC);
+    setInterval(pollAlchemy, pollAlchemyIntervalMSec);    
+    setInterval(pollLocal, pollLocalIntervalMSec); 
+}
+
+function getDiffString() {
+    diff = alchemyBlockNum - localBlockNum;
+    diffStr = ""
+    if (diff > 0) {
+        diffStr = `>${diff}`;
+    } else {
+        diffStr = `${diff}`;
+    }
+    return diffStr.padStart(3, " ");
+}
+
+async function pollAlchemy() {
+    let startTime = Date.now();
+    let blockNumber = -1;
+    try {
+        blockNumber = await alchemyProvider.getBlockNumber();
+        let endTime = Date.now();
+        let timeDiff = (endTime - startTime) / 1000;
+        alchemyBlockNum = blockNumber;
+        let msg = `|${blockNumber}|        |${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
+        flog.debug(msg);
+    } catch (ex) {
+        flog.debug(`ERROR - unable to connect to alchemyProvider;`);
+    }
+}
+
+async function pollLocal() {
+    let startTime = Date.now();
+    let blockNumber = -1;
+    try {
+        blockNumber = await localProvider.getBlockNumber();
+        let endTime = Date.now();
+        let timeDiff = (endTime - startTime) / 1000;
+        localBlockNum = blockNumber;
+        let msg = `|        |${blockNumber}|${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
+        flog.debug(msg);
+    } catch (ex) {
+        flog.debug(`ERROR - unable to connect to localProvider;`);
+    }
 }
 
 async function getBlockNumberByProvider(providerName) {
