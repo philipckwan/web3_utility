@@ -24,7 +24,7 @@ init();
  curl -X POST https://polygon-rpc.com/ --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
 */
 async function main() {
-    console.log(`blockCheck.main: v1.4;`);
+    console.log(`blockCheck.main: v1.5;`);
 
     if (process.argv.length == 3 && process.argv[2] == "-once") {
         aPoll();
@@ -72,7 +72,7 @@ async function aPoll() {
 
     let blockNumberPromises = []
     blockNumberPromises.push(getBlockNumberByProvider("local"));
-    blockNumberPromises.push(getBlockNumberByProvider("polygonRPC"));
+    //blockNumberPromises.push(getBlockNumberByProvider("polygonRPC"));
     blockNumberPromises.push(getBlockNumberByProvider("alchemy"));
     
     Promise.all(blockNumberPromises).then(async (resultsBlockNumberAndProvider) => {
@@ -92,8 +92,8 @@ async function aPoll() {
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
         let alchemyMinusLocal = blockNumberFromAlchemy - blockNumberFromLocal;
-        let alchemyMinusLocalStr = alchemyMinusLocal > 0 ? `+${alchemyMinusLocal}` : `${alchemyMinusLocal}`;
-        let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}]; blockCheck: polygonRPC:${blockNumberFromPolygonRPC}; alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal}; alchemyMinusLocal:${alchemyMinusLocalStr};`;
+        let alchemyMinusLocalStr = alchemyMinusLocal > 0 ? `>${alchemyMinusLocal}` : `${alchemyMinusLocal}`;
+        let msg = `T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}]; blockCheck: alchemy:${blockNumberFromAlchemy}; local:${blockNumberFromLocal}; alchemyMinusLocal:[${alchemyMinusLocalStr}];`;
         flog.debug(msg);
     });    
 }
