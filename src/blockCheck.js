@@ -19,10 +19,12 @@ log4js.configure({
 
 init();
 
-const alchemyProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_POLYGON_MAINNET);
+const alchemyProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_BLOCKNUM_ALCHEMY);
+const quicknodeProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_BLOCKNUM_QUICKNODE);
 const localProvider = new ethers.providers.StaticJsonRpcProvider(process.env.API_URL_LOCALHOST);
 
 let alchemyBlockNum = -1;
+let quicknodeBlockNum = -1;
 let localBlockNum = -1;
 
 /*
@@ -30,7 +32,7 @@ let localBlockNum = -1;
  curl -X POST https://polygon-rpc.com/ --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
 */
 async function main() {
-    console.log(`blockCheck.main: v1.5;`);
+    console.log(`blockCheck.main: v1.6;`);
 
     if (process.argv.length == 3 && process.argv[2] == "-once") {
         aPoll();
@@ -38,8 +40,10 @@ async function main() {
     }
     
     let pollAlchemyIntervalMSec = Number(process.env.BLOCKCHECK_ALCMY_INTERVAL_MSEC);
+    let pollQuicknodeIntervalMSec = Number(process.env.BLOCKCHECK_QCKND_INTERVAL_MSEC);
     let pollLocalIntervalMSec = Number(process.env.BLOCKCHECK_LOCAL_INTERVAL_MSEC);
     setInterval(pollAlchemy, pollAlchemyIntervalMSec);    
+    setInterval(pollQuicknode, pollQuicknodeIntervalMSec);    
     setInterval(pollLocal, pollLocalIntervalMSec); 
 }
 
@@ -62,10 +66,25 @@ async function pollAlchemy() {
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
         alchemyBlockNum = blockNumber;
-        let msg = `|${blockNumber}|        |${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
+        let msg = `|${blockNumber}|        |        |${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
         flog.debug(msg);
     } catch (ex) {
         flog.debug(`ERROR - unable to connect to alchemyProvider;`);
+    }
+}
+
+async function pollQuicknode() {
+    let startTime = Date.now();
+    let blockNumber = -1;
+    try {
+        blockNumber = await quicknodeProvider.getBlockNumber();
+        let endTime = Date.now();
+        let timeDiff = (endTime - startTime) / 1000;
+        alchemyBlockNum = blockNumber;
+        let msg = `|        |        |${blockNumber}|${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
+        flog.debug(msg);
+    } catch (ex) {
+        flog.debug(`ERROR - unable to connect to quicknodeProvider;`);
     }
 }
 
@@ -77,7 +96,7 @@ async function pollLocal() {
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
         localBlockNum = blockNumber;
-        let msg = `|        |${blockNumber}|${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
+        let msg = `|        |${blockNumber}|        |${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
         flog.debug(msg);
     } catch (ex) {
         flog.debug(`ERROR - unable to connect to localProvider;`);
