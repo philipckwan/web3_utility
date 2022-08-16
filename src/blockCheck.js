@@ -32,7 +32,7 @@ let localBlockNum = -1;
  curl -X POST https://polygon-rpc.com/ --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
 */
 async function main() {
-    console.log(`blockCheck.main: v1.6;`);
+    console.log(`blockCheck.main: v1.7;`);
 
     if (process.argv.length == 3 && process.argv[2] == "-once") {
         aPoll();
@@ -80,7 +80,7 @@ async function pollQuicknode() {
         blockNumber = await quicknodeProvider.getBlockNumber();
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
-        alchemyBlockNum = blockNumber;
+        quicknodeBlockNum = blockNumber;
         let msg = `|        |        |${blockNumber}|${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
         flog.debug(msg);
     } catch (ex) {
