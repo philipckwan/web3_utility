@@ -29,6 +29,7 @@ exports.UNISWAP_V3_FEE = {
   WMATIC_TBAC: 500,
   USDC_PAR: 500,
   USDT_WMATIC: 500,
+  SAND_WETH: 3000,
 };
 
 exports.DODO_LENDING_POOL = {

@@ -42,9 +42,15 @@ async function main() {
     let pollAlchemyIntervalMSec = Number(process.env.BLOCKCHECK_ALCMY_INTERVAL_MSEC);
     let pollQuicknodeIntervalMSec = Number(process.env.BLOCKCHECK_QCKND_INTERVAL_MSEC);
     let pollLocalIntervalMSec = Number(process.env.BLOCKCHECK_LOCAL_INTERVAL_MSEC);
-    setInterval(pollAlchemy, pollAlchemyIntervalMSec);    
-    setInterval(pollQuicknode, pollQuicknodeIntervalMSec);    
-    setInterval(pollLocal, pollLocalIntervalMSec); 
+    if (pollAlchemyIntervalMSec > 0) {
+        setInterval(pollAlchemy, pollAlchemyIntervalMSec);    
+    }
+    if (pollQuicknodeIntervalMSec > 0) {
+        setInterval(pollQuicknode, pollQuicknodeIntervalMSec);    
+    }
+    if (pollLocalIntervalMSec > 0) {
+        setInterval(pollLocal, pollLocalIntervalMSec); 
+    }
 }
 
 function getDiffString() {
@@ -65,7 +71,12 @@ async function pollAlchemy() {
         blockNumber = await alchemyProvider.getBlockNumber();
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
-        alchemyBlockNum = blockNumber;
+        if (alchemyBlockNum < blockNumber) {
+            console.log(`pollAlchemy: new block [${blockNumber}]; T:[${formatTime(endTime)}];`);
+            alchemyBlockNum = blockNumber;
+            //let block = await alchemyProvider.getBlock(blockNumber);
+            //console.log(`++${JSON.stringify(block)}`);            
+        }
         let msg = `|${blockNumber}|        |        |${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
         flog.debug(msg);
     } catch (ex) {
@@ -80,7 +91,12 @@ async function pollQuicknode() {
         blockNumber = await quicknodeProvider.getBlockNumber();
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
-        quicknodeBlockNum = blockNumber;
+        if (quicknodeBlockNum < blockNumber) {
+            console.log(`pollQuicknode: new block [${blockNumber}]; T:[${formatTime(endTime)}];`);
+            quicknodeBlockNum = blockNumber;
+            //let block = await quicknodeProvider.getBlock(blockNumber);
+            //console.log(`++${JSON.stringify(block)}`);            
+        }
         let msg = `|        |        |${blockNumber}|${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
         flog.debug(msg);
     } catch (ex) {
@@ -95,7 +111,12 @@ async function pollLocal() {
         blockNumber = await localProvider.getBlockNumber();
         let endTime = Date.now();
         let timeDiff = (endTime - startTime) / 1000;
-        localBlockNum = blockNumber;
+        if (localBlockNum < blockNumber) {
+            console.log(`pollLocal: new block [${blockNumber}]; T:[${formatTime(endTime)}];`);
+            localBlockNum = blockNumber;
+            //let block = await localProvider.getBlock(blockNumber);
+            //console.log(`++${JSON.stringify(block)}`);            
+        }
         let msg = `|        |${blockNumber}|        |${getDiffString()}|T:[${formatTime(startTime)}->${formatTime(endTime)}|${timeDiff}];`;
         flog.debug(msg);
     } catch (ex) {

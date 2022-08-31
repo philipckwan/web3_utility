@@ -1,36 +1,35 @@
 const {ethers} = require('ethers');
-const {WHALE_A_ADDRESS, WHALE_A_WALLET_SECRET} = require('./constants');
-const {init, getConnectedWallet, MY_ADDRESS, MY_WALLET_SECRET, transferNative} = require('./helpers');
+//const {WHALE_A_ADDRESS, WHALE_A_WALLET_SECRET} = require('./constants');
+const {init, getConnectedWallet, printNativeBalance} = require('./helpers');
 
 init();
 
 async function main() {
     // arguments are being passed
-    // node transferNative.js <from account> <to account> <amount>
     if (process.argv.length != 5) {
         console.log(`transferNative.main: ERROR - arguments wrong;`);
-        console.log(`node transferNative.js <from account> <to account> <amount>`);
+        console.log(`node transferNative.js <sender private key> <receiver address> <amount>`);
         return;
     }
-    let from = process.argv[2];
-    let to = process.argv[3];
+    let senderSecret = process.argv[2];
+    let receiverAddress = process.argv[3];
     let amount = process.argv[4];
     
-    let fromWallet = null;
-    let toAddress = null;
-    if (from == "me") {
-        fromWallet = getConnectedWallet(MY_WALLET_SECRET);
-    } else if (from == "whaleA") {
-        fromWallet = getConnectedWallet(WHALE_A_WALLET_SECRET);
-    }
+    let senderWallet = getConnectedWallet(senderSecret);
 
-    if (to == "me") {
-        toAddress = MY_ADDRESS;
-    } else if (to == "whaleA") {
-        toAddress = WHALE_A_ADDRESS;
+    let param = {
+        to: receiverAddress,
+        value: ethers.utils.parseEther(amount.toString())
     }
-    
-    transferNative(fromWallet, toAddress, amount);
+    try {
+        await senderWallet.sendTransaction(param);
+        console.log(`transferNative: transfer executed successfully;`);
+    } catch (ex) {
+        console.log(`transferNative: transfer executed with ERROR; ${ex.error.data.message};`);
+        //console.log(ex.error.data.message);
+    }
+    printNativeBalance(senderWallet.address);
+    printNativeBalance(receiverAddress);
 }
 
 main();

@@ -44,6 +44,12 @@ TOKENS_POLYGON_MAINNET = [
     ["0x82a0E6c02b91eC9f6ff943C0A933c03dBaa19689", "WNT"],
     ["0x516cdAe319F4B0E31A29c9572bc3F255679d7a0F", "DDD"],
     ["0xbbba073c31bf03b8acf7c28ef0738decf3695683", "SAND"],
+    ["0xdF7837DE1F2Fa4631D716CF2502f8b230F1dcc32", "TEL"],
+    ["0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97", "DFYN"],
+    ["0x980111ae1B84E50222C8843e3A7a038F36Fecd2b", "STACK"],
+    ["0xB0B417A00E1831DeF11b242711C3d251856AADe3", "DLP"],
+    ["", ""],
+    ["", ""],
     ["", ""],
     ["", ""],
 ]
@@ -63,6 +69,10 @@ TOKENS_ETHEREUM_MAINNET = [
     ["0x3845badAde8e6dFF049820680d1F14bD3903a5d0", "SAND"],
     ["0xdac17f958d2ee523a2206206994597c13d831ec7", "USDT"],
     ["0x6b175474e89094c44da98b954eedeac495271d0f", "DAI"],
+    ["0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", "stETH"],
+    ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "WETH"],
+    ["", ""],
+    ["", ""],
     ["", ""],
 ]
 
@@ -102,7 +112,7 @@ exports.findTokens = (tokenStr) => {
 exports.findOneToken = (tokenStr) => {
     let foundTokens = this.findTokens(tokenStr);
     if (foundTokens.length != 1) {
-        console.log(`constantsToken.findOneToken: ERROR - not able to find exactly 1 token, found ${foundTokens.length} instead;`);
+        console.log(`constantsToken.findOneToken: ERROR - not able to find exactly 1 token, found ${foundTokens.length} instead; tokenStr:${tokenStr};`);
         return undefined;
     }
     return foundTokens[0];

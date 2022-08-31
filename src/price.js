@@ -5,7 +5,7 @@ const ERC20ABI = require('../abis/abi.json');
 const {getProvider, lookupUniswapV3PoolFeeBySymbol} = require("./helpers")
 
 exports.getPriceOnUniV3 = async (tokenIn, tokenOut, amountIn, fee) => {
-  console.log(`price.getPriceOnUniV3: fee:${fee};`);
+  //console.log(`price.getPriceOnUniV3: fee:${fee};`);
     const quoterAddress = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6";
     const quoterContract = new ethers.Contract(quoterAddress, quoterABI, getProvider());
     const quotedAmountOut = await quoterContract.callStatic.quoteExactInputSingle(
@@ -51,8 +51,10 @@ exports.queryPrice = async (tokenInAddress, tokenOutAddress, amountIn, swap) => 
   let tokenOutContract = new ethers.Contract(tokenOutAddress, ERC20ABI, getProvider());
   let bnAmountIn = ethers.utils.parseUnits(amountIn.toString(), await tokenInContract.decimals());
   let bnAmountOut = ethers.BigNumber.from(0);
+  let feeStr = "";
   if (swap[1] == "uniswapV3") {
       let fee = lookupUniswapV3PoolFeeBySymbol(await tokenInContract.symbol(), await tokenOutContract.symbol());
+      feeStr = `:${fee}`;
       if (fee == -1) {
         bnAmountOut = ethers.BigNumber.from(0);
       } else {
@@ -64,7 +66,8 @@ exports.queryPrice = async (tokenInAddress, tokenOutAddress, amountIn, swap) => 
   //console.log(`quoter.printPriceAndRateFromSwap: 5.0;`);
   let amountOut = Number(ethers.utils.formatUnits(bnAmountOut, await tokenOutContract.decimals()));
   rate = amountOut / amountIn;
-  console.log(`price: [${swap[1].padStart(10)}]: [${(await tokenInContract.symbol()).padStart(6)}]->[${(await tokenOutContract.symbol()).padStart(6)}]:$${amountIn.toFixed(4)}->$${amountOut.toFixed(4)}; %:${rate.toFixed(4)};`);
+  let swapAndFeeStr = `${swap[1].substring(0,3)}${feeStr}`;
+  console.log(`price: [${swapAndFeeStr.padEnd(10)}]: [${(await tokenInContract.symbol()).padStart(6)}]->[${(await tokenOutContract.symbol()).padStart(6)}]:$${amountIn.toFixed(4)}->$${amountOut.toFixed(4)}; %:${rate.toFixed(4)};`);
   return amountOut;
 }
 

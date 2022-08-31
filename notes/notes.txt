@@ -12,3 +12,4 @@ DONE(27/7)-multiple hops for quoter, e.g. DMA only can swap for USDT and WMATIC,
 -separate script that requires signing (i.e. private key), vs just need wallet address
 DONE(12/8)-blockCheck: alchemyMinusLocal, output 0 and add '+' sign for better statistics
 DONE(12/8)-blockCheck: get rid of polygonRPC check
+DONE(31/8)-uniV3FeeCheck: check a swap pair across multiple fee tiers in uniswapV3

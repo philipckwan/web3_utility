@@ -204,19 +204,6 @@ exports.impersonateFundErc20 = async (sender, recepient, token, amount) => {
     console.log(`helpers.impersonateFundErc20: 9.0`);
 };
 
-exports.transferNative = async (senderWallet, receiverAddress, amount) => {
-    console.log(`helpers.transferNative: 1.0;`);
-
-    let param = {
-        to: receiverAddress,
-        value: ethers.utils.parseEther(amount.toString())
-    }
-    await senderWallet.sendTransaction(param);
-
-    console.log(`helpers.transferNative: 9.0;`);
-};
-
-
 exports.wrapNative = async (fromWallet, amountFrom) => {
     console.log(`helpers.wrapNative: 1.0;`);
     const wmaticContract = this.getTokenContract(ERC20_TOKEN["WMATIC"]);

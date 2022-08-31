@@ -1,6 +1,6 @@
 const {findOneToken} = require('./constantsToken');
 const {SWAPS, findASwapByPrefix} = require('./constantsSwap');
-const {init} = require("./helpers");
+const {init, printGeneralInfo} = require("./helpers");
 const {getMaxSwapAmount} = require("./price");
 init();
 
@@ -19,6 +19,7 @@ async function getIsProfit(tokens, initialAmountIn, swaps) {
         amountOutSwaps.push(amountOutSwap[1]);
     }
     let isProfit = amountOut > initialAmountIn;
+    let amountRate = amountOut / initialAmountIn;
     let route = "[";
     for (let i = 0; i < tokens.length; i++) {
         route += tokens[i][1];
@@ -27,7 +28,7 @@ async function getIsProfit(tokens, initialAmountIn, swaps) {
         }
     }
     route += "]";
-    console.log(`arbCheck.getIsProfit: isProfit:${isProfit}; ${route} $${amountOut.toFixed(2)};`);
+    console.log(`arbCheck: isProfit:${isProfit}; ${route} $${amountOut.toFixed(2)}; %[${amountRate.toFixed(6)}];`);
 }
 
 async function main() {
@@ -43,6 +44,8 @@ async function main() {
         console.log(`the above line defaults to "node arbCheck.js -sALL -a10000 usdc wmatic usdc`);
         return;
     }
+
+    await printGeneralInfo();
 
     let swaps = SWAPS;
     let amount = 10000;    
