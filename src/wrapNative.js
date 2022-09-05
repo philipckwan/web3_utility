@@ -1,6 +1,9 @@
 const {ethers} = require('ethers');
-const {ERC20_TOKEN, WHALE_A_WALLET_SECRET} = require('./constants');
-const {init, getConnectedWallet, MY_WALLET_SECRET, wrapNative} = require('./helpers');
+const {ERC20_TOKEN} = require('./constants');
+const {init, getConnectedWallet, getNetwork, printNativeBalance, printTokenBalance} = require('./helpers');
+const {findOneToken} = require('./constantsToken');
+const ERC20ABI = require('../abis/abi.json');
+
 init();
 
 async function main() {
@@ -8,20 +11,41 @@ async function main() {
     // node wrapNative.js <account> <amount>
     if (process.argv.length != 4) {
         console.log(`wrapNative.main: ERROR - arguments wrong;`);
-        console.log(`node wrapNative.js <account> <amount>`);
+        console.log(`node wrapNative.js <private key> <amount>`);
         return;
     }
-    let account = process.argv[2];
+    let privateKey = process.argv[2];
     let amount = process.argv[3];
     
-    let fromWallet = null;
-    if (account == "me") {
-        fromWallet = getConnectedWallet(MY_WALLET_SECRET);
-    } else if (account == "whaleA") {
-        fromWallet = getConnectedWallet(WHALE_A_WALLET_SECRET);
+    let wallet = getConnectedWallet(privateKey);
+    let wrappedNativeTokenStruct = undefined;
+    const network = getNetwork();
+
+    if (network == "mumbai" || network == "polygon_mainnet") {
+        wrappedNativeTokenStruct = findOneToken("WMATIC");
+    } else if (network == "ethereum_goerli" || network == "ethereum_mainnet") {
+        wrappedNativeTokenStruct = findOneToken("WETH");
+    } else {
+        console.log(`wrapNative: ERROR - invalid network to find the wrapped token; network:${network};`);
+        return;
+    }
+    if (wrappedNativeTokenStruct == undefined) {
+        console.log(`wrapNative: ERROR - wrappedNativeTokenStruct not found;`);
+        return;
+    }
+    let param = {
+        to: wrappedNativeTokenStruct[0],
+        value: ethers.utils.parseEther(amount.toString())
+    }
+    try {
+        await wallet.sendTransaction(param);
+    } catch (ex) {
+        console.log(`wrapNative: transfer executed with ERROR; ${ex.error.data.message};`);
     }
 
-    await wrapNative(fromWallet, amount);
+    printNativeBalance(wallet.address);
+    printTokenBalance(wallet.address, wrappedNativeTokenStruct[0]);
+    //await wrapNative(fromWallet, amount);
 
 }
 

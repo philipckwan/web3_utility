@@ -1,15 +1,14 @@
 const {findOneToken} = require('./constantsToken');
 const {ethers} = require('ethers');
-const {init, getProvider} = require("./helpers");
+const {init, getProvider, printGeneralInfo, argumentParsers, ARGV_KEY_AMOUNT, ARGV_KEY_NETWORK, ARGV_KEY_LOCAL, ARGV_KEY_REVERSE} = require("./helpers");
 const {getPriceOnUniV3} = require("./price");
 const ERC20ABI = require('../abis/abi.json');
-init();
 
 async function main() {
 
     if (process.argv.length < 4) {
         console.log(`uniV3FeeCheck: ERROR - arguments wrong;`);
-        console.log(`node uniV3FeeCheck.js [-a<amount>] [-r] [-f<fee1>[,<fee2>,...]] <tokenFrom> <tokenTo>`);
+        console.log(`node uniV3FeeCheck.js [-a<amount>] [-r] [-n<network>] [-l<local>] [-f<fee1>[,<fee2>,...]] <tokenFrom> <tokenTo>`);
         console.log(`node uniV3FeeCheck.js -f500,1000,3000 dai weth`);
         console.log(` the above command will check for swap betwen dai and weth for 3 fees: 500, 1000 and 3000`);
         console.log(``);
@@ -17,25 +16,45 @@ async function main() {
         return;
     }
 
+    let [parsedArgMap, remainingArgv] = argumentParsers(process.argv);
+    let parsedAmountStr = parsedArgMap.get(ARGV_KEY_AMOUNT[1]);
+    let parsedReversedStr = parsedArgMap.get(ARGV_KEY_REVERSE[1]);
+    let parsedNetworkStr = parsedArgMap.get(ARGV_KEY_NETWORK[1]);
+    let parsedLocalStr = parsedArgMap.get(ARGV_KEY_LOCAL[1]);
+    
+    init(parsedNetworkStr, parsedLocalStr);
+    await printGeneralInfo();
+
     let amount = 1;
+    let isFromAll = false;
+    if ("ALL" == parsedAmountStr) {
+        isFromAll = true;
+    } else if (parsedAmountStr != undefined) {
+        amount = Number(parsedAmountStr);
+    }
+
     let isReverse = false;
+    if (parsedReversedStr != undefined) {
+        isReverse = true;
+    }
+
     let isFeeSpecified = false;
     let fees = [];
     let tokens = [];
-    for (let i = 2; i < process.argv.length; i++) {
-        if (process.argv[i].substring(0,2) == "-a") {
-            amount = Number(process.argv[i].substring(2));
-        } else if (process.argv[i].substring(0,2) == "-r") {
-            isReverse = true;
-        } else if (process.argv[i].substring(0,2) == "-f") {
+    for (let i = 2; i < remainingArgv.length; i++) {
+        if (remainingArgv[i].substring(0,2) == "-f") {
             isFeeSpecified = true;
-            feesStr = process.argv[i].substring(2);
+            feesStr = remainingArgv[i].substring(2);
             feesStrSplit = feesStr.split(",");
             for (let j = 0; j < feesStrSplit.length; j++) {
                 fees.push(Number(feesStrSplit[j]));
             }
         } else {
-            tokens.push(findOneToken(process.argv[i]));
+            if (remainingArgv[i].substring(0,2) == "0x") {
+                tokens.push([remainingArgv[i], `unknown_token_${i-2}`])
+            } else {
+                tokens.push(findOneToken(remainingArgv[i]))
+            }
         }
     }    
     if (isReverse) {
@@ -46,13 +65,12 @@ async function main() {
         return;
     }
     if (!isFeeSpecified) {
-        console.log(`uniV3FeeCheck: ERROR - fee is not specified, currently not supported;`);
+        console.log(`uniV3FeeCheck: ERROR - fee is not specified, operation not supported;`);
         return;
     }
     let tokenInContract = new ethers.Contract(tokens[0][0], ERC20ABI, getProvider());
     let tokenOutContract = new ethers.Contract(tokens[1][0], ERC20ABI, getProvider());
     let bnAmountIn = ethers.utils.parseUnits(amount.toString(), await tokenInContract.decimals());
-
     for (let i = 0; i < fees.length; i++) {
         let aFee = fees[i];
         let feePercent = aFee / 10000;

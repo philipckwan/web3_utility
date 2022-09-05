@@ -13,3 +13,7 @@ DONE(27/7)-multiple hops for quoter, e.g. DMA only can swap for USDT and WMATIC,
 DONE(12/8)-blockCheck: alchemyMinusLocal, output 0 and add '+' sign for better statistics
 DONE(12/8)-blockCheck: get rid of polygonRPC check
 DONE(31/8)-uniV3FeeCheck: check a swap pair across multiple fee tiers in uniswapV3
+DONE(5/9)-argument flag to switch network and local on command line, i.e. -nETH -lremote
+DONE(5/9)-argument to directly put in token address in quoter.js
+DONE(5/9)-support different swap address on different network, i.e. sushiswap on polygon vs ethereum
+-bug: in quoter, if amountIn is 0, got runtime error due to divide by 0

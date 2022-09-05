@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const {getNetwork} = require('./helpers');
 /*
 exports.TOKENS = [
     ["0x2791bca1f2de4661ed88a30c99a7a9449aa84174", "USDC"],
@@ -71,22 +71,22 @@ TOKENS_ETHEREUM_MAINNET = [
     ["0x6b175474e89094c44da98b954eedeac495271d0f", "DAI"],
     ["0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", "stETH"],
     ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "WETH"],
-    ["", ""],
-    ["", ""],
+    ["0x4e15361fd6b4bb609fa63c81a2be19d873717870", "FTM"],
+    ["0x514910771af9ca656af840dff83e8264ecf986ca", "LINK"],
     ["", ""],
 ]
 
 exports.getTokenStructs = () => {
-    if (process.env.USE_NETWORK == "polygon_mainnet") {
+    if (getNetwork() == "polygon_mainnet") {
         return TOKENS_POLYGON_MAINNET;
     }
-    if (process.env.USE_NETWORK == "ethereum_goerli") {
+    if (getNetwork() == "ethereum_goerli") {
         return TOKENS_ETHEREUM_GOERLI;
     } 
-    if (process.env.USE_NETWORK == "ethereum_mainnet") {
+    if (getNetwork() == "ethereum_mainnet") {
         return TOKENS_ETHEREUM_MAINNET;
     }
-    console.log(`constantsToken.getTokenStructs: ERROR - network not found:${process.env.USE_NETWORK}; returning empty array;`);
+    console.log(`constantsToken.getTokenStructs: ERROR - network not found:${getNetwork()}; returning empty array;`);
     return [];
 };
 
@@ -99,7 +99,7 @@ exports.findTokens = (tokenStr) => {
             foundTokens.push(aToken);
         } else {
             let tokenSymbolWithPrefix = `@${aToken[1]}`;
-            matchIdx = tokenSymbolWithPrefix.indexOf(tokenStr.toUpperCase());
+            matchIdx = tokenSymbolWithPrefix.toUpperCase().indexOf(tokenStr.toUpperCase());
             if (matchIdx >= 0) {
                 foundTokens.push(aToken);
             }

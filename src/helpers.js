@@ -8,33 +8,42 @@ const {abi:UNISWAP_V3_ROUTER_ABI} = require('@uniswap/v3-periphery/artifacts/con
 exports.MY_ADDRESS = process.env.WALLET_ADDRESS;
 exports.MY_WALLET_SECRET = process.env.WALLET_SECRET;
 
-exports.init = () => {
+exports.init = (networkOverride="", localOverride="") => {
 
-    console.log(`helpers.init: 1.0; mode:${process.env.IS_LOCAL}; network:${process.env.USE_NETWORK};`);
+    console.log(`helpers.init: from env: network:${process.env.USE_NETWORK}; local:${process.env.IS_LOCAL};`);
+    console.log(`helpers.init: from arg: network:${networkOverride}; local: ${localOverride};`);
     if (this.provider == null) {
-        this.tokenMap = new Map();
-        this.network = process.env.USE_NETWORK;
-        this.mode = process.env.IS_LOCAL;
+        //this.tokenMap = new Map();
+        this.network = networkOverride == "" ? process.env.USE_NETWORK : networkOverride;
+        this.local = localOverride == "" ? process.env.IS_LOCAL : localOverride;
         let apiUrl = null;
         if (this.network == "mumbai") {
             apiUrl = process.env.API_URL_MUMBAI;
         } else if (this.network == "ethereum_goerli") {
             apiUrl = process.env.API_URL_GOERLI;
-        } else if (this.network == "polygon_mainnet") {
+        } else if (this.network == "polygon_mainnet" || this.network == "PM") {
+            this.network = "polygon_mainnet";
             apiUrl = process.env.API_URL_POLYGON_MAINNET;
-        } else if (this.network == "ethereum_mainnet") {
+        } else if (this.network == "ethereum_mainnet" || this.network == "EM") {
+            this.network = "ethereum_mainnet";
             apiUrl = process.env.API_URL_ETHEREUM_MAINNET;
         } else {
             console.log(`helpers.init: ERROR - unknown network;`);
             process.exit();
         }
-        if (this.mode == "local") {
-            // override the apiUrl is mode == "local"
+        if (this.local == "local" || this.local == "L") {
+            this.local = "local";
             apiUrl = process.env.API_URL_LOCALHOST;
         } 
         //this.provider = new ethers.providers.JsonRpcProvider(apiUrl);
         this.provider = new ethers.providers.StaticJsonRpcProvider(apiUrl);
     }
+    console.log(`helpers.init: END: network:${this.network}; local:${this.local};`);
+}
+
+exports.printGeneralInfo = async () => {
+    let blockNumber = await this.provider.getBlockNumber();
+    console.log(`helpers.printGeneralInfo: 1.0; network:[${this.network}]; local:[${this.local}]; blockNumber:[${blockNumber}];`)
 }
 
 exports.formatTime = (d) => {
@@ -44,6 +53,41 @@ exports.formatTime = (d) => {
     let second = aDate.getSeconds();
     let mSec = aDate.getMilliseconds();
     return `${hour.toString().padStart(2,"0")}:${minute.toString().padStart(2,"0")}:${second.toString().padStart(2,"0")}:${mSec.toString().padStart(3,"0")}`;
+}
+
+exports.ARGV_KEY_SWAPS = ["-s", "SWAPS"]
+exports.ARGV_KEY_AMOUNT = ["-a", "AMOUNT"]
+exports.ARGV_KEY_NETWORK = ["-n", "NETWORK"]
+exports.ARGV_KEY_LOCAL = ["-l", "LOCAL"]
+exports.ARGV_KEY_REVERSE = ["-r", "REVERSE"]
+
+exports.argumentParsers = (argv) => {
+    let parsedArgMap = new Map()
+    let remainingArgv = [];
+    for (let i = 0; i < argv.length; i++) {
+        if (argv[i].substring(0,2) == this.ARGV_KEY_SWAPS[0]) {
+            parsedArgMap.set(this.ARGV_KEY_SWAPS[1], argv[i].substring(2))
+            continue
+        }
+        if (argv[i].substring(0,2) == this.ARGV_KEY_AMOUNT[0]) {
+            parsedArgMap.set(this.ARGV_KEY_AMOUNT[1], argv[i].substring(2))
+            continue
+        }
+        if (argv[i].substring(0,2) == this.ARGV_KEY_NETWORK[0]) {
+            parsedArgMap.set(this.ARGV_KEY_NETWORK[1], argv[i].substring(2))
+            continue
+        }
+        if (argv[i].substring(0,2) == this.ARGV_KEY_LOCAL[0]) {
+            parsedArgMap.set(this.ARGV_KEY_LOCAL[1], argv[i].substring(2))
+            continue
+        }
+        if (argv[i].substring(0,2) == this.ARGV_KEY_REVERSE[0]) {
+            parsedArgMap.set(this.ARGV_KEY_REVERSE[1], argv[i].substring(2))
+            continue
+        }
+        remainingArgv.push(argv[i]);
+    }
+    return [parsedArgMap, remainingArgv]
 }
 
 exports.getConnectedWallet = (walletSecret) => {
@@ -63,6 +107,7 @@ exports.getTokenContractByAddress = (tokenAddress) => {
     return tokenContract;
 }
 
+/*
 exports.getTokenContract = (token) => {
     if (!this.tokenMap.has(token.symbol)) {
         //console.log(`helpers.getTokenContract: creating a new ERC20 token contract for [${token.symbol}];`);
@@ -75,13 +120,8 @@ exports.getTokenContract = (token) => {
         this.tokenMap.set(token.symbol, tokenContract);
     }
     return this.tokenMap.get(token.symbol);
-
 }
-
-exports.printGeneralInfo = async () => {
-    let blockNumber = await this.provider.getBlockNumber();
-    console.log(`helpers.printGeneralInfo: 1.0; network:[${this.network}]; mode:[${this.mode}]; blockNumber:[${blockNumber}];`)
-}
+*/
 
 exports.printNativeBalance = async (address) => {
     let bnNativeBalance = await this.provider.getBalance(address);
@@ -103,7 +143,7 @@ exports.printTokenInfoAndBalanceByAddress = async (tokenAddress) => {
 
     console.log(`helpers.printTokenInfoAndBalanceByAddress: balance for [${this.MY_ADDRESS}]:$${balance};`);
 }
-*/
+
 
 exports.printTokenBalance = async (address, token) => {
     let tokenContract = this.getTokenContract(token);
@@ -118,9 +158,25 @@ exports.printTokenBalance = async (address, token) => {
 
     console.log(`helpers.printTokenBalance: address:[${address}]; token:[${tokenSymbolFromContract}] $${balance};`);
 }
+*/
+
+exports.printTokenBalance = async (walletAddress, tokenAddress) => {
+    let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
+    let tokenSymbolFromContract = await tokenContract.symbol();
+    let tokenDecimalsFromContract = await tokenContract.decimals();
+
+    let bnBalance = await tokenContract.balanceOf(walletAddress);
+    let balance = ethers.utils.formatUnits(bnBalance, tokenDecimalsFromContract);
+
+    console.log(`-address:[${tokenAddress}]; token:[${tokenSymbolFromContract.padStart(6)}]; $${balance};`);
+}
 
 exports.getProvider = () => {
     return this.provider;
+}
+
+exports.getNetwork = () => {
+    return this.network;
 }
 
 exports.lookupUniswapV3PoolFee = (token1, token2) => {
@@ -178,6 +234,7 @@ exports.getPoolState = async (poolContract) => {
     return state;
 }
 
+/*
 exports.fundERC20 = async (sender, recepient, token, amount) => {
     console.log(`helpers.fundERC20: 1.0`);
     const tokenContract = this.getTokenContract(token);
@@ -203,16 +260,6 @@ exports.impersonateFundErc20 = async (sender, recepient, token, amount) => {
     await network.provider.request({method: "hardhat_stopImpersonatingAccount", params: [sender]});
     console.log(`helpers.impersonateFundErc20: 9.0`);
 };
+*/
 
-exports.wrapNative = async (fromWallet, amountFrom) => {
-    console.log(`helpers.wrapNative: 1.0;`);
-    const wmaticContract = this.getTokenContract(ERC20_TOKEN["WMATIC"]);
 
-    let param = {
-        to: wmaticContract.address,
-        value: ethers.utils.parseEther(amountFrom.toString())
-    }
-    await fromWallet.sendTransaction(param);
-
-    console.log(`helpers.wrapNative: 9.0;`);
-};
