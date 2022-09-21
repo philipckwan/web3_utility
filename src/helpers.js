@@ -27,6 +27,9 @@ exports.init = (networkOverride="", localOverride="") => {
         } else if (this.network == "ethereum_mainnet" || this.network == "EM") {
             this.network = "ethereum_mainnet";
             apiUrl = process.env.API_URL_ETHEREUM_MAINNET;
+        } else if (this.network == "fantom_mainnet" || this.network == "FM") {
+            this.network = "fantom_mainnet";
+            apiUrl = process.env.API_URL_FANTOM_MAINNET;
         } else {
             console.log(`helpers.init: ERROR - unknown network;`);
             process.exit();

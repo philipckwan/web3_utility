@@ -73,6 +73,16 @@ TOKENS_ETHEREUM_MAINNET = [
     ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "WETH"],
     ["0x4e15361fd6b4bb609fa63c81a2be19d873717870", "FTM"],
     ["0x514910771af9ca656af840dff83e8264ecf986ca", "LINK"],
+    ["0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e", "YFI"],
+    ["", ""],
+    ["", ""],
+]
+
+
+TOKENS_FANTOM_MAINNET = [
+    ["0x74b23882a30290451A17c44f4F05243b6b58C76d", "WETH"],
+    ["", ""],
+    ["", ""],
     ["", ""],
 ]
 
@@ -85,6 +95,9 @@ exports.getTokenStructs = () => {
     } 
     if (getNetwork() == "ethereum_mainnet") {
         return TOKENS_ETHEREUM_MAINNET;
+    }
+    if (getNetwork() == "fantom_mainnet") {
+        return TOKENS_FANTOM_MAINNET;
     }
     console.log(`constantsToken.getTokenStructs: ERROR - network not found:${getNetwork()}; returning empty array;`);
     return [];

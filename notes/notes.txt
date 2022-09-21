@@ -17,3 +17,6 @@ DONE(5/9)-argument flag to switch network and local on command line, i.e. -nETH 
 DONE(5/9)-argument to directly put in token address in quoter.js
 DONE(5/9)-support different swap address on different network, i.e. sushiswap on polygon vs ethereum
 -bug: in quoter, if amountIn is 0, got runtime error due to divide by 0
+-enhance quoter to automatically query prices across the 3 fee tiers in uniswapV3
+DONE(21/9)-add fantom network
+-add a liquidity pool queryer

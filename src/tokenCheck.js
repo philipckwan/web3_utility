@@ -1,16 +1,15 @@
-const {TOKENS, findTokens} = require('./constantsToken');
+const {findTokens} = require('./constantsToken');
 const {ethers} = require('ethers');
-const {init, getProvider} = require("./helpers");
+const {init, getProvider, printGeneralInfo, argumentParsers, ARGV_KEY_NETWORK, ARGV_KEY_LOCAL} = require("./helpers");
 const ERC20ABI = require('../abis/abi.json');
 require('dotenv').config();
-init();
 
 async function main() {
     //console.log(`tokenCheck.main: 1.1;`);
 
     if (process.argv.length < 3) {
         console.log(`tokenCheck.main: ERROR - arguments wrong;`);
-        console.log(`node tokenCheck.js <token symbol> | <token address>`);
+        console.log(`node tokenCheck.js [-n<network>] [-l<local>] <token symbol> | <token address>`);
         console.log(`e.g:`);
         console.log(`node tokenCheck.js usdt`);
         console.log(`node tokenCheck.js 0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270`);
@@ -18,7 +17,15 @@ async function main() {
         console.log(`node tokenCheck.js 0x0d50`);
         return;
     }
-    let tokenStr = process.argv[2];
+        
+    let [parsedArgMap, remainingArgv] = argumentParsers(process.argv);
+    let parsedNetworkStr = parsedArgMap.get(ARGV_KEY_NETWORK[1]);
+    let parsedLocalStr = parsedArgMap.get(ARGV_KEY_LOCAL[1]);
+    
+    init(parsedNetworkStr, parsedLocalStr);
+    await printGeneralInfo();
+
+    let tokenStr = remainingArgv[2];
     let foundTokens = findTokens(tokenStr);
 
     if (foundTokens.length == 0) {
