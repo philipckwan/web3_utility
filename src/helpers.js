@@ -1,13 +1,13 @@
 const {ethers} = require('ethers');
 //const{network, ethers} = require('hardhat');
 const ERC20ABI = require('../abis/abi.json');
-const {UNISWAP_V3_FEE, ERC20_TOKEN, UNISWAP_V3_ROUTER_ADDRESS} = require('./constants');
+const {UNISWAP_V3_FEE} = require('./constants/constants');
 require('dotenv').config();
-const {abi:UNISWAP_V3_ROUTER_ABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json');
+//const {abi:UNISWAP_V3_ROUTER_ABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json');
 
 exports.MY_ADDRESS = process.env.WALLET_ADDRESS;
 exports.MY_WALLET_SECRET = process.env.WALLET_SECRET;
-
+/*
 exports.init = (networkOverride="", localOverride="") => {
 
     console.log(`helpers.init: from env: network:${process.env.USE_NETWORK}; local:${process.env.IS_LOCAL};`);
@@ -92,7 +92,9 @@ exports.argumentParsers = (argv) => {
     }
     return [parsedArgMap, remainingArgv]
 }
+*/
 
+/*
 exports.getConnectedWallet = (walletSecret) => {
     let connectedWallet = null;
     if (walletSecret == null || walletSecret.length == 0) {
@@ -105,12 +107,13 @@ exports.getConnectedWallet = (walletSecret) => {
     return connectedWallet;
 }
 
+
 exports.getTokenContractByAddress = (tokenAddress) => {
     let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
     return tokenContract;
 }
 
-/*
+
 exports.getTokenContract = (token) => {
     if (!this.tokenMap.has(token.symbol)) {
         //console.log(`helpers.getTokenContract: creating a new ERC20 token contract for [${token.symbol}];`);
@@ -124,7 +127,7 @@ exports.getTokenContract = (token) => {
     }
     return this.tokenMap.get(token.symbol);
 }
-*/
+
 
 exports.printNativeBalance = async (address) => {
     let bnNativeBalance = await this.provider.getBalance(address);
@@ -132,36 +135,6 @@ exports.printNativeBalance = async (address) => {
 
     console.log(`helpers.printNativeBalance: address:[${address}]; nativeBalance:$${nativeBalance};`);
 }
-
-/*
-exports.printTokenInfoAndBalanceByAddress = async (tokenAddress) => {
-    let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
-    let tokenSymbolFromContract = await tokenContract.symbol();
-    let tokenDecimalsFromContract = await tokenContract.decimals();
-    let tokenNameFromContract = await tokenContract.name();
-    console.log(`helpers.printTokenInfoAndBalanceByAddress: token address:${tokenAddress}; symbol:${tokenSymbolFromContract}; name:${tokenNameFromContract}; decimals:${tokenDecimalsFromContract};`);
-
-    let bnBalance = await tokenContract.balanceOf(this.MY_ADDRESS);
-    let balance = ethers.utils.formatUnits(bnBalance, tokenDecimalsFromContract);
-
-    console.log(`helpers.printTokenInfoAndBalanceByAddress: balance for [${this.MY_ADDRESS}]:$${balance};`);
-}
-
-
-exports.printTokenBalance = async (address, token) => {
-    let tokenContract = this.getTokenContract(token);
-    if (tokenContract == null) {
-        return;
-    }
-    let tokenSymbolFromContract = await tokenContract.symbol();
-    let tokenDecimalsFromContract = await tokenContract.decimals();
-
-    bnBalance = await tokenContract.balanceOf(address);
-    balance = ethers.utils.formatUnits(bnBalance, tokenDecimalsFromContract);
-
-    console.log(`helpers.printTokenBalance: address:[${address}]; token:[${tokenSymbolFromContract}] $${balance};`);
-}
-*/
 
 exports.printTokenBalance = async (walletAddress, tokenAddress) => {
     let tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, this.provider);
@@ -173,7 +146,9 @@ exports.printTokenBalance = async (walletAddress, tokenAddress) => {
 
     console.log(`-address:[${tokenAddress}]; token:[${tokenSymbolFromContract.padStart(6)}]; $${balance};`);
 }
+*/
 
+/*
 exports.getProvider = () => {
     return this.provider;
 }
@@ -181,6 +156,7 @@ exports.getProvider = () => {
 exports.getNetwork = () => {
     return this.network;
 }
+*/
 
 exports.lookupUniswapV3PoolFee = (token1, token2) => {
     return this.lookupUniswapV3PoolFeeBySymbol(token1.symbol, token2.symbol);

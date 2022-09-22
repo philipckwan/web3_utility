@@ -3,6 +3,7 @@ const {ERC20_TOKEN} = require('./constants');
 const {init, getConnectedWallet, getNetwork, printNativeBalance, printTokenBalance} = require('./helpers');
 const {findOneToken} = require('./constantsToken');
 const ERC20ABI = require('../abis/abi.json');
+const { Constants } = require('./constants/Constants');
 
 init();
 
@@ -21,10 +22,12 @@ async function main() {
     let wrappedNativeTokenStruct = undefined;
     const network = getNetwork();
 
-    if (network == "mumbai" || network == "polygon_mainnet") {
+    if (network == Constants.NETWORKS.POLYGON_MUMBAI || network == Constants.NETWORKS.POLYGON_MAINNET) {
         wrappedNativeTokenStruct = findOneToken("WMATIC");
-    } else if (network == "ethereum_goerli" || network == "ethereum_mainnet") {
+    } else if (network == Constants.NETWORKS.ETHEREUM_GOERLI || network == Constants.NETWORKS.ETHEREUM_MAINNET) {
         wrappedNativeTokenStruct = findOneToken("WETH");
+    } else if (network == Constants.NETWORKS.FANTOM_MAINNET) {
+        wrappedNativeTokenStruct = findOneToken("WFTM")
     } else {
         console.log(`wrapNative: ERROR - invalid network to find the wrapped token; network:${network};`);
         return;

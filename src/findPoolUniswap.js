@@ -1,3 +1,8 @@
+/* 
+ obsoleted and replaced by: uniswapV3Utility.js
+ */
+
+/*
 const {ethers} = require('ethers');
 const {abi:UNISWAP_V3_FACTORY_ABI} = require('@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json');
 const {ERC20TokensMumbai, ERC20ABI, UNISWAP_V3_FACTORY_ADDRESS} = require('./constants');
@@ -35,3 +40,4 @@ async function main() {
 }
 
 main();
+*/
