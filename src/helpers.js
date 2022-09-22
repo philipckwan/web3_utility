@@ -1,13 +1,18 @@
+/* 
+ obsoleted 
+ */
+
+/*
 const {ethers} = require('ethers');
 //const{network, ethers} = require('hardhat');
 const ERC20ABI = require('../abis/abi.json');
-const {UNISWAP_V3_FEE} = require('./constants/constants');
+const {Constants} = require('./constants/Constants');
 require('dotenv').config();
 //const {abi:UNISWAP_V3_ROUTER_ABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json');
 
 exports.MY_ADDRESS = process.env.WALLET_ADDRESS;
 exports.MY_WALLET_SECRET = process.env.WALLET_SECRET;
-/*
+
 exports.init = (networkOverride="", localOverride="") => {
 
     console.log(`helpers.init: from env: network:${process.env.USE_NETWORK}; local:${process.env.IS_LOCAL};`);
@@ -146,9 +151,7 @@ exports.printTokenBalance = async (walletAddress, tokenAddress) => {
 
     console.log(`-address:[${tokenAddress}]; token:[${tokenSymbolFromContract.padStart(6)}]; $${balance};`);
 }
-*/
 
-/*
 exports.getProvider = () => {
     return this.provider;
 }
@@ -156,11 +159,11 @@ exports.getProvider = () => {
 exports.getNetwork = () => {
     return this.network;
 }
-*/
 
 exports.lookupUniswapV3PoolFee = (token1, token2) => {
     return this.lookupUniswapV3PoolFeeBySymbol(token1.symbol, token2.symbol);
 }
+
 
 exports.lookupUniswapV3PoolFeeBySymbol = (token1Symbol, token2Symbol) => {
     let fee = -1;
@@ -168,8 +171,8 @@ exports.lookupUniswapV3PoolFeeBySymbol = (token1Symbol, token2Symbol) => {
     let key1 = `${token1Symbol}_${token2Symbol}`;
     let key2 = `${token2Symbol}_${token1Symbol}`;
 
-    let value1 = UNISWAP_V3_FEE[key1];
-    let value2 = UNISWAP_V3_FEE[key2];
+    let value1 = Constants.UNISWAP_V3_FEE[key1];
+    let value2 = Constants.UNISWAP_V3_FEE[key2];
 
     if (value1 === undefined && value2 === undefined) {
         console.log(`helpers.lookupUniswapV3PoolFeeBySymbol: ERROR - fee not found for [${key1}] pair, returning -1;`);
@@ -213,7 +216,6 @@ exports.getPoolState = async (poolContract) => {
     return state;
 }
 
-/*
 exports.fundERC20 = async (sender, recepient, token, amount) => {
     console.log(`helpers.fundERC20: 1.0`);
     const tokenContract = this.getTokenContract(token);

@@ -1,5 +1,4 @@
-const { ethers, BigNumber } = require("ethers");
-const {init, printGeneralInfo, formatTime, getProvider, getConnectedWallet, MY_WALLET_SECRET, lookupUniswapV3PoolFeeBySymbol} = require('./helpers');
+const {init, formatTime, getProvider} = require('./helpers');
 
 init();
 

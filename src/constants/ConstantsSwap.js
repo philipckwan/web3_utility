@@ -3,7 +3,7 @@ const {Context} = require('../utils/Context');
 const {Constants} = require('./Constants');
 
 class ConstantsSwap {
-    SWAPS_POLYGON_MAINNET = [
+    static SWAPS_POLYGON_MAINNET = [
         ["0xE592427A0AEce92De3Edee1F18E0157C05861564", "uniswapV3"],
         ["0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", "sushiswap"], 
         ["0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff", "quickswap"],
@@ -14,7 +14,7 @@ class ConstantsSwap {
         ["0x2fA4334cfD7c56a0E7Ca02BD81455205FcBDc5E9", "dodo"]
     ]
 
-    SWAPS_ETHEREUM_MAINNET = [
+    static SWAPS_ETHEREUM_MAINNET = [
         ["0xE592427A0AEce92De3Edee1F18E0157C05861564", "uniswapV3"],
         ["0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F", "sushiswap"],
         ["0x881D40237659C251811CEC9c364ef91dC08D300C", "metamask"],
@@ -29,10 +29,10 @@ class ConstantsSwap {
     static getSwapStructs = () => {
         let network = Context.getNetwork();
         if (network == Constants.NETWORKS.POLYGON_MAINNET) {
-            return SWAPS_POLYGON_MAINNET;
+            return this.SWAPS_POLYGON_MAINNET;
         }
         if (network == Constants.NETWORKS.ETHEREUM_MAINNET) {
-            return SWAPS_ETHEREUM_MAINNET;
+            return this.SWAPS_ETHEREUM_MAINNET;
         }
         console.log(`ConstantsSwap.getSwapStructs: ERROR - network not found:${network}; returning empty array;`);
         return [];

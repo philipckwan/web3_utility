@@ -1,9 +1,10 @@
-const {findOneToken} = require('./constantsToken');
+const {ConstantsToken} = require('./constants/ConstantsToken');
 const {ethers} = require('ethers');
-const {getSwapStructs, findASwapByPrefix} = require('./constantsSwap');
-const {init, getProvider, printGeneralInfo, argumentParsers, ARGV_KEY_SWAPS, ARGV_KEY_AMOUNT, ARGV_KEY_NETWORK, ARGV_KEY_LOCAL, ARGV_KEY_REVERSE} = require("./helpers");
+const {ConstantsSwap} = require('./constants/ConstantsSwap');
+const {Context} = require('./utils/Context');
+const {Utilities} = require('./utils/Utilities');
 const ERC20ABI = require('../abis/abi.json');
-const {getMaxSwapAmount} = require("./price");
+const {Price} = require("./utils/Price");
 
 async function main() {
     //console.log(`quoter.main: 1.1;`);
@@ -24,23 +25,24 @@ async function main() {
         return;
     }
     
-    let [parsedArgMap, remainingArgv] = argumentParsers(process.argv);
-    let parsedSwapsStr = parsedArgMap.get(ARGV_KEY_SWAPS[1]);
-    let parsedAmountStr = parsedArgMap.get(ARGV_KEY_AMOUNT[1]);
-    let parsedReversedStr = parsedArgMap.get(ARGV_KEY_REVERSE[1]);
-    let parsedNetworkStr = parsedArgMap.get(ARGV_KEY_NETWORK[1]);
-    let parsedLocalStr = parsedArgMap.get(ARGV_KEY_LOCAL[1]);
+    let [parsedArgMap, remainingArgv] = Utilities.argumentParsers(process.argv);
+    let parsedSwapsStr = parsedArgMap.get(Utilities.ARGV_KEY_SWAPS[1]);
+    let parsedAmountStr = parsedArgMap.get(Utilities.ARGV_KEY_AMOUNT[1]);
+    let parsedReversedStr = parsedArgMap.get(Utilities.ARGV_KEY_REVERSE[1]);
+    let parsedNetworkStr = parsedArgMap.get(Utilities.ARGV_KEY_NETWORK[1]);
+    let parsedLocalStr = parsedArgMap.get(Utilities.ARGV_KEY_LOCAL[1]);
     
-    init(parsedNetworkStr, parsedLocalStr);
-    await printGeneralInfo();
+    Context.init(parsedNetworkStr, parsedLocalStr);
+    await Context.printNetworkAndBlockNumber();
+    let pricer = new Price(Context.getWeb3Provider());
     //return;
-    let swaps = getSwapStructs();
+    let swaps = ConstantsSwap.getSwapStructs();
     if ("ALL" == parsedSwapsStr) {
         // do nothing
     } else {
         swaps = [];
         for (let i = 0; i < parsedSwapsStr.length; i++) {
-            swaps.push(findASwapByPrefix(parsedSwapsStr.substring(i,i+1)));
+            swaps.push(ConstantsSwap.findASwapByPrefix(parsedSwapsStr.substring(i,i+1)));
         }
     }
 
@@ -62,7 +64,7 @@ async function main() {
         if (remainingArgv[i].substring(0,2) == "0x") {
             tokens.push([remainingArgv[i], `unknown_token_${i-2}`])
         } else {
-            tokens.push(findOneToken(remainingArgv[i]))
+            tokens.push(ConstantsToken.findOneToken(remainingArgv[i]))
         }
     }
 
@@ -74,7 +76,7 @@ async function main() {
         return;
     }
     if (isFromAll) {
-        let tokenFromContract = new ethers.Contract(tokens[0][0], ERC20ABI, getProvider());
+        let tokenFromContract = new ethers.Contract(tokens[0][0], ERC20ABI, Context.getWeb3Provider());
         let bnTokenFromBalance = await tokenFromContract.balanceOf(process.env.WALLET_ADDRESS);
         amount = Number(ethers.utils.formatUnits(bnTokenFromBalance, await tokenFromContract.decimals()));
     }
@@ -82,7 +84,7 @@ async function main() {
     let amountIn = amount;
     let amountOutSwaps = [];
     for (let i = 0; i < tokens.length - 1; i++) {
-        [amountOut, amountOutSwap] = await getMaxSwapAmount(tokens[i][0], tokens[i+1][0], amountIn, swaps);
+        [amountOut, amountOutSwap] = await pricer.getMaxSwapAmount(tokens[i][0], tokens[i+1][0], amountIn, swaps);
         amountIn = amountOut;
         amountOutSwaps.push(amountOutSwap[1]);
     }

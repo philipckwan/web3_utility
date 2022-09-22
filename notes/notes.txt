@@ -8,7 +8,7 @@ DONE(v1.3)-for blockCheck.js, add a diff detector
 DONE(v1.4)-for blockCheck.js, run the requests in parallel
 DONE(27/7)-multiple hops for quoter, e.g. DMA only can swap for USDT and WMATIC, if i want to swap to WETH; also compare this with arbCheck
 -add dodoRouter to swap router
--add a command line argument for env, i.e. -elocal vs -epolygon_mainnet, -emumbai, -eeth_mainnet
+DONE(22/9)-add a command line argument for env, i.e. -elocal vs -epolygon_mainnet, -emumbai, -eeth_mainnet
 -separate script that requires signing (i.e. private key), vs just need wallet address
 DONE(12/8)-blockCheck: alchemyMinusLocal, output 0 and add '+' sign for better statistics
 DONE(12/8)-blockCheck: get rid of polygonRPC check
@@ -17,6 +17,7 @@ DONE(5/9)-argument flag to switch network and local on command line, i.e. -nETH 
 DONE(5/9)-argument to directly put in token address in quoter.js
 DONE(5/9)-support different swap address on different network, i.e. sushiswap on polygon vs ethereum
 -bug: in quoter, if amountIn is 0, got runtime error due to divide by 0
--enhance quoter to automatically query prices across the 3 fee tiers in uniswapV3
+DONE(22/9)-enhance quoter to automatically query prices across the 3 fee tiers in uniswapV3
 DONE(21/9)-add fantom network
--add a liquidity pool queryer
+DONE(22/9)-add a liquidity pool queryer; liquidityPoolCheck.js
+DONE(22/9)-when doing price check (i.e. from quoter.js, Price.js), for uniswapV3, iterates all the fees to find the best rate
