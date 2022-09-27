@@ -1,4 +1,3 @@
-const {ConstantsToken} = require('./constants/ConstantsToken');
 const {ethers} = require('ethers');
 const ERC20ABI = require('../abis/abi.json');
 const {Context} = require('./utils/Context');
@@ -37,7 +36,7 @@ async function main() {
     let fees = [];
     let tokens = [];
     let poolAddress = "";
-    for (let i = 2; i < remainingArgv.length; i++) {
+    for (let i = 0; i < remainingArgv.length; i++) {
         if (remainingArgv[i].substring(0,2) == "-f") {
             isFeeSpecified = true;
             feesStr = remainingArgv[i].substring(2);
@@ -49,7 +48,7 @@ async function main() {
             if (remainingArgv[i].substring(0,2) == "0x") {
                 tokens.push([remainingArgv[i], `unknown_token_${i-2}`])
             } else {
-                tokens.push(ConstantsToken.findOneToken(remainingArgv[i]))
+                tokens.push(Context.findOneToken(remainingArgv[i]))
             }
         }
     }    

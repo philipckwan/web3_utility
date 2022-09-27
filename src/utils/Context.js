@@ -193,8 +193,8 @@ class Context {
                   ]
          */
         let resultsSwapsAndFees = [];
-        
-        if (argSwapsAndFees == "ALL") {
+
+        if (argSwapsAndFees == null || argSwapsAndFees == "ALL") {
             let swaps = this.getSwapStructs();
             resultsSwapsAndFees = swaps.map(obj => [obj[0], obj[1], []]);
             return resultsSwapsAndFees;
@@ -254,6 +254,21 @@ class Context {
             resultsSwapsAndFees.push([foundSwap[0], foundSwap[1], foundSwapFees]);
         }
         return resultsSwapsAndFees;
+    }
+
+    tokensParser(argRemaining) {
+        /*
+          input: arrays of arguments, expecting they are all tokens, either symbol (i.e. usdt) or address (0x2791)
+          output: a list of tokensStructs, as defined in ConstantsToken.js
+         */
+        let tokens = argRemaining.map(anArg => this.findOneToken(anArg))
+        return tokens;
+    }
+
+    amountParser(argAmount, amountDefault) {
+        let isFromAll = (argAmount == "ALL");
+        let amount = !isNaN(argAmount) ? Number(argAmount) : amountDefault;
+        return [isFromAll, amount];
     }
 
 }

@@ -26,17 +26,17 @@ async function main() {
     let parsedLocalStr = parsedArgMap.get(Utilities.ARGV_KEY_LOCAL[1]);
     
     Context.init(parsedNetworkStr, parsedLocalStr);
-    let web3Provider = Context.getWeb3Provider();
+    await Context.printNetworkAndBlockNumber();
 
-    let tokenStr = remainingArgv[2];
-    let foundTokens = ConstantsToken.findTokens(tokenStr);
+    let tokenStr = remainingArgv[0];
+    let foundTokens = Context.findTokens(tokenStr);
 
     if (foundTokens.length == 0) {
-        console.log(`token [${tokenStr}] not found in ConstantsToken.js;`);
+        console.log(`token [${tokenStr}] not found in Context.findTokens();`);
         if (tokenStr.length == 42 && tokenStr.substring(0,2) == "0x") {
             let tokenAddressAssumed = tokenStr;
             console.log(`assume [${tokenAddressAssumed}] is a token address; now attempt to find from chain...`);
-            let tokenContract = new ethers.Contract(tokenAddressAssumed, ERC20ABI, web3Provider);
+            let tokenContract = new ethers.Contract(tokenAddressAssumed, ERC20ABI, Context.getWeb3Provider());
             try {
                 let tokenSymbolFromContract = await tokenContract.symbol();
                 console.log(`found token [${tokenSymbolFromContract}] from chain by address...`);
@@ -51,7 +51,7 @@ async function main() {
         let aFoundTokenAddress = aFoundToken[0];
         let aFoundTokenSymbol = aFoundToken[1];
         console.log(`-found token: address:[${aFoundTokenAddress}]; symbol:[${aFoundTokenSymbol}];`);
-        let tokenContract = new ethers.Contract(aFoundTokenAddress, ERC20ABI, web3Provider);
+        let tokenContract = new ethers.Contract(aFoundTokenAddress, ERC20ABI, Context.getWeb3Provider());
         let tokenSymbolFromContract = await tokenContract.symbol();
         let tokenDecimalsFromContract = await tokenContract.decimals();
         let tokenNameFromContract = await tokenContract.name();

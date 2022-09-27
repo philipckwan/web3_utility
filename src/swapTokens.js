@@ -1,40 +1,37 @@
-const {UNISWAP_V3_ROUTER_ADDRESS} = require('./constants');
+const {Constants} = require('./constants/Constants');
 const {ethers} = require('ethers');
-const {init, getProvider, lookupUniswapV3PoolFeeBySymbol} = require('./helpers');
-const {findOneToken} = require('./constantsToken');
-const {SWAPS, findASwapByPrefix} = require('./constantsSwap');
-const {getMaxSwapAmount} = require("./price");
+const {Context} = require('./utils/Context');
+const {Utilities} = require('./utils/Utilities');
+const {Price} = require("./utils/Price");
+const {UniswapV3Commons} = require("./utils/UniswapV3Commons");
 require('dotenv').config();
 const ERC20ABI = require('../abis/abi.json');
 const {abi:UNISWAP_V3_ROUTER_ABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json');
 var UniswapV2Router = require("../abis/IUniswapV2Router02.json");
 
-init();
-
-async function swap(tokenFromStruct, tokenToStruct, amountFrom, amountToExpected, swapStruct) {
-    console.log(`swap: 1.0;`);
-
+async function swap(tokenFromAddress, tokenToAddress, amountFrom, amountToExpected, swapAndFee) {
     let wallet = new ethers.Wallet(process.env.WALLET_SECRET);
-    let connectedWallet = wallet.connect(getProvider());
+    let connectedWallet = wallet.connect(Context.getWeb3Provider());
 
-    let tokenFromContract = new ethers.Contract(tokenFromStruct[0], ERC20ABI, getProvider());
-    let tokenToContract = new ethers.Contract(tokenToStruct[0], ERC20ABI, getProvider());
+    let tokenFromContract = new ethers.Contract(tokenFromAddress, ERC20ABI, Context.getWeb3Provider());
+    let tokenToContract = new ethers.Contract(tokenToAddress, ERC20ABI, Context.getWeb3Provider());
     const bnAmountFrom = ethers.utils.parseUnits(amountFrom.toString(), await tokenFromContract.decimals());
-    console.log(`swap: amountFrom:${amountFrom}; bnAmountFrom:${bnAmountFrom};`);
+    console.log(`swapTokens: amountFrom:${amountFrom}; bnAmountFrom:${bnAmountFrom};`);
 
     let amountFromTimesTen = amountFrom * 10;
     const bnAmountApproved = ethers.utils.parseUnits(amountFromTimesTen.toString(), await tokenFromContract.decimals());
-    console.log(`swap: amountFromTimesTen:${amountFromTimesTen}; bnAmountApproved:${bnAmountApproved};`);
+    console.log(`swapTokens: amountFromTimesTen:${amountFromTimesTen}; bnAmountApproved:${bnAmountApproved};`);
 
     let minAmountToExpected = (amountToExpected * 0.5).toFixed(await tokenToContract.decimals());
     const bnMinAmountToExpected = ethers.utils.parseUnits(minAmountToExpected.toString(), await tokenToContract.decimals());
-    console.log(`swap: amountToExpected:${amountToExpected}; minAmountToExpected:${minAmountToExpected}; bnMinAmountToExpected:${bnMinAmountToExpected};`);
+    console.log(`swapTokens: amountToExpected:${amountToExpected}; minAmountToExpected:${minAmountToExpected}; bnMinAmountToExpected:${bnMinAmountToExpected};`);
     
-    let routerAddress = swapStruct[1] == "uniswapV3" ? UNISWAP_V3_ROUTER_ADDRESS : swapStruct[0];
+    let routerAddress = swapAndFee[0];
+    let routerName  = swapAndFee[1];
 
-    const approvalTx = await tokenFromContract.connect(connectedWallet).approve(routerAddress, bnAmountApproved, {gasPrice: ethers.utils.parseUnits("50", "gwei"), gasLimit: 80000});
+    const approvalTx = await tokenFromContract.connect(connectedWallet).approve(routerAddress, bnAmountApproved, {gasPrice: ethers.utils.parseUnits(Constants.ETH_GAS_PRICE, "gwei"), gasLimit: Constants.ETH_ERC20_APPROVAL_GAS_LIMIT});
     console.log(JSON.stringify(approvalTx));
-    const approvalTxReceipt = await approvalTx.wait();
+    //const approvalTxReceipt = await approvalTx.wait();
     
     console.log(`swap: token approved, will proceed to swap;`);
     /*
@@ -43,27 +40,29 @@ async function swap(tokenFromStruct, tokenToStruct, amountFrom, amountToExpected
         return;
     }
     */
-
-    if (swapStruct[1] == "uniswapV3") {
-        uniswapV3Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnMinAmountToExpected);
+    
+    if (routerName == "uniswapV3") {
+        uniswapV3Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnMinAmountToExpected, swapAndFee);
     } else {
-        uniswapV2Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnMinAmountToExpected, routerAddress);
+        uniswapV2Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnMinAmountToExpected, swapAndFee);
     }
-
+    
 }
 
-async function uniswapV3Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnAmountToExpected) {
-    console.log(`uniswapV3Swap: 1.0;`);
-    
+async function uniswapV3Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnAmountToExpected, swapAndFee) {    
     let executionGasLimit = 1200000;
     let executionGasPrice = 50;
     let bnExecutionGasPrice = ethers.utils.parseUnits(`${executionGasPrice}`, "gwei");
-    let swapFee = lookupUniswapV3PoolFeeBySymbol(await tokenFromContract.symbol(), await tokenToContract.symbol());
-
+    let swapFee = swapAndFee[3];
+    let swapAddress = swapAndFee[0];
+    if (swapFee == 0) {
+        swapFee = UniswapV3Commons.lookupUniswapV3PoolFeeBySymbol(await tokenFromContract.symbol(), await tokenToContract.symbol());
+    } 
+    
     const swapRouterContract = new ethers.Contract(
-        UNISWAP_V3_ROUTER_ADDRESS,
+        swapAddress,
         UNISWAP_V3_ROUTER_ABI,
-        getProvider()
+        Context.getWeb3Provider()
     );
 
     const transaction = await swapRouterContract.connect(connectedWallet).exactInputSingle(
@@ -83,22 +82,23 @@ async function uniswapV3Swap(tokenFromContract, tokenToContract, connectedWallet
         }
     );
 
-    console.log(JSON.stringify(transaction));    
+    //console.log(JSON.stringify(transaction));    
     const transactionReceipt = await transaction.wait();
         
     console.log(`uniswapV3Swap: 9.0;`);
 }
 
-async function uniswapV2Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnAmountToExpected, routerAddress) {
+async function uniswapV2Swap(tokenFromContract, tokenToContract, connectedWallet, bnAmountFrom, bnAmountToExpected, swapAndFee) {
     console.log(`uniswapV2Swap: 1.0;`);
     let executionGasLimit = 1200000;
     let executionGasPrice = 50;
     let bnExecutionGasPrice = ethers.utils.parseUnits(`${executionGasPrice}`, "gwei");
    
+    let routerAddress = swapAndFee[0];
     const swapRouterContract = new ethers.Contract(
         routerAddress,
         UniswapV2Router.abi,
-        getProvider()
+        Context.getWeb3Provider()
     );
 
     const transaction = await swapRouterContract.connect(connectedWallet).swapExactTokensForTokens(
@@ -116,62 +116,57 @@ async function uniswapV2Swap(tokenFromContract, tokenToContract, connectedWallet
     //console.log(`uniswapV2Swap: ___transactionReceipt___BELOW___;`);
     //console.log(transactionReceipt);
     //console.log(`uniswapV2Swap: ___transactionReceipt___ABOVE___;`);
-        
-    console.log(`uniswapV2Swap: 9.0;`);
 }
 
 async function main() {
     // arguments are being passed
     // node swapTokens.js -s<swap> -a<amount> <tokenFrom> <tokenTo>
-    if (process.argv.length != 6) {
+    if (process.argv.length < 5) {
         console.log(`swapTokens.main: ERROR - arguments wrong;`);
-        console.log(`node swapTokens.js -s<swaps> -a<amount> <tokenFrom> <tokenTo>`);
+        console.log(`node swapTokens.js [-n<network>] [-l<local>] [-s<swaps>] -a<amount> <tokenFrom> <tokenTo>`);
         return;
     }
 
-    let swaps = [];
-    let amountFrom = 0;
-    let isFromAll = false;
-    if (process.argv[2].substring(0,2) == "-s") {
-        if ("ALL" == process.argv[2].substring(2)) {
-            swaps = SWAPS;
-        } else {
-            for (let j = 2; j < process.argv[2].length; j++) {
-                swaps.push(findASwapByPrefix(process.argv[2].substring(j,j+1)));
-            }
-        }
-    } else {
-        console.log(`ERROR - -s<swaps> not defined;`);
-        return;
-    }
-    
-    if (process.argv[3].substring(0,2) == "-a") {
-        if (process.argv[3].substring(2) == "ALL") {
-            isFromAll = true;
-        } else {
-            amountFrom = Number(process.argv[3].substring(2));
-        }
-    } else {
-        console.log(`ERROR - -a<amount> not defined;`);
-        return;
-    }
-    
-    tokenFromStruct = findOneToken(process.argv[4]);
-    tokenToStruct = findOneToken(process.argv[5]);
+    let [parsedArgMap, remainingArgv] = Utilities.argumentParsers(process.argv);
+    let parsedSwapsStr = parsedArgMap.get(Utilities.ARGV_KEY_SWAPS[1]);
+    let parsedAmountStr = parsedArgMap.get(Utilities.ARGV_KEY_AMOUNT[1]);
+    let parsedNetworkStr = parsedArgMap.get(Utilities.ARGV_KEY_NETWORK[1]);
+    let parsedLocalStr = parsedArgMap.get(Utilities.ARGV_KEY_LOCAL[1]);
 
+    Context.init(parsedNetworkStr, parsedLocalStr);
+    await Context.printNetworkAndBlockNumber();
+    let pricer = new Price(Context.getWeb3Provider());
+
+    let swapsAndFeesList = Context.swapsAndFeesParsers(parsedSwapsStr);
+
+    let tokenStructs = Context.tokensParser(remainingArgv);
+    if (tokenStructs.length < 2) {
+        console.log(`swapTokens: ERROR - less than 2 tokens, tokens.length:${tokenStructs.length};`);
+        return;
+    }
+    tokenFromStruct = tokenStructs[0];
+    tokenToStruct = tokenStructs[1];
+
+    [isFromAll, amountFrom] = Context.amountParser(parsedAmountStr, 0);
     if (isFromAll) {
-        let tokenFromContract = new ethers.Contract(tokenFromStruct[0], ERC20ABI, getProvider());
+        let tokenFromContract = new ethers.Contract(tokenFromStruct[0], ERC20ABI, Context.getWeb3Provider());
         let bnTokenFromBalance = await tokenFromContract.balanceOf(process.env.WALLET_ADDRESS);
         amountFrom = Number(ethers.utils.formatUnits(bnTokenFromBalance, await tokenFromContract.decimals()));
     }
-    [maxAmountOut, maxAmountSwap] = await getMaxSwapAmount(tokenFromStruct[0], tokenToStruct[0], amountFrom, swaps);
-    console.log(`swapTokens: maxAmountOut:${maxAmountOut}; maxAmountSwap:${maxAmountSwap[1]};`);
-    if (maxAmountOut == 0) {
-        console.log(`swapTokens: maxAmountOut is $0, cannot find any good swap;`);
+    if (amountFrom <= 0) {
+        console.log(`swapTokens: ERROR - amountFrom is less than or equal to 0; amountFrom:${amountFrom};`);
+        return;
+    }
+    [amountTo, amountOutSwapAndFee] = await pricer.getMaxSwapAmountBySwapsAndFeesList(tokenFromStruct[0], tokenToStruct[0], amountFrom, swapsAndFeesList);
+    let swapShortAndFeeStr = `${amountOutSwapAndFee[1].substring(0, 3)}:${amountOutSwapAndFee[3]}`;
+    //[maxAmountOut, maxAmountSwap] = await getMaxSwapAmount(tokenFromStruct[0], tokenToStruct[0], amountFrom, swaps);
+    console.log(`swapTokens: amountTo:${amountTo}; swapAndFee:${swapShortAndFeeStr};`);
+    if (amountTo == 0) {
+        console.log(`swapTokens: amountTo is $0, cannot find any good swap;`);
         return;
     }
     
-    swap(tokenFromStruct, tokenToStruct, amountFrom, maxAmountOut, maxAmountSwap);
+    swap(tokenFromStruct[0], tokenToStruct[0], amountFrom, amountTo, amountOutSwapAndFee);
 }
 
 main();

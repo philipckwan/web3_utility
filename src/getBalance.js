@@ -1,4 +1,3 @@
-const {ConstantsToken} = require('./constants/ConstantsToken');
 const {Context} = require('./utils/Context');
 const {Utilities} = require('./utils/Utilities')
 const {ethers} = require('ethers');
@@ -26,21 +25,26 @@ async function main() {
     }
 
     let [parsedArgMap, remainingArgv] = Utilities.argumentParsers(process.argv);
+    let parsedSwapsStr = parsedArgMap.get(Utilities.ARGV_KEY_SWAPS[1]);
+    let parsedAmountStr = parsedArgMap.get(Utilities.ARGV_KEY_AMOUNT[1]);
+    let parsedReversedStr = parsedArgMap.get(Utilities.ARGV_KEY_REVERSE[1]);
     let parsedNetworkStr = parsedArgMap.get(Utilities.ARGV_KEY_NETWORK[1]);
     let parsedLocalStr = parsedArgMap.get(Utilities.ARGV_KEY_LOCAL[1]);
-
+    
     Context.init(parsedNetworkStr, parsedLocalStr);
-    console.log(`getBalance: v2.2;`);
+    await Context.printNetworkAndBlockNumber();
+    console.log(`getBalance: v2.3;`);
     //await Context.printNetworkAndBlockNumber();
     let web3Provider = Context.getWeb3Provider();
 
     let walletAddress = undefined;
-    if (remainingArgv[2] == "me") {
+    let argWallet = remainingArgv[0];
+    if (argWallet == "me") {
         walletAddress = process.env.WALLET_ADDRESS;
-    } else if (remainingArgv[2].length == 42 && remainingArgv[2].substring(0,2) == "0x") {
-        walletAddress = remainingArgv[2];
-    } else if (remainingArgv[2].length == 64) {
-        privateKey = remainingArgv[2];
+    } else if (argWallet.length == 42 && argWallet.substring(0,2) == "0x") {
+        walletAddress = argWallet;
+    } else if (argWallet.length == 64) {
+        privateKey = argWallet;
         let wallet = new ethers.Wallet(privateKey);
         wallet.connect(web3Provider);
         walletAddress = wallet.address;
@@ -52,17 +56,18 @@ async function main() {
     console.log(`getBalance: address:${walletAddress}; nativeBalance:${nativeBalance}`);
     //await printNativeBalance(walletAddress);
 
-    if (remainingArgv.length > 3) {
-        if (remainingArgv[3] == "all") {
-            for (const aTokenStruct of ConstantsToken.getTokenStructs()) {
+    remainingArgv.shift();
+
+    if (remainingArgv.length > 0) {
+        if (remainingArgv[0] == "all") {
+            for (const aTokenStruct of Context.getTokenStructs()) {
                 if (aTokenStruct[0] != "") {
                     await printTokenBalance(walletAddress, aTokenStruct[0]);
                 }  
             }
         } else {
-            for (let i = 3; i < remainingArgv.length; i++) {
-                let aTokenStruct = ConstantsToken.findOneToken(remainingArgv[i]);
-                console.log(`__address:${aTokenStruct[0]}; symbol:${aTokenStruct[1]};`)
+            let tokenStructs = Context.tokensParser(remainingArgv);
+            for (let aTokenStruct of tokenStructs) {
                 if (aTokenStruct != undefined && aTokenStruct[0] != "") {
                     await printTokenBalance(walletAddress, aTokenStruct[0]);
                 } 
