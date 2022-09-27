@@ -13,12 +13,14 @@ const uniswapV3QuoterAddress = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6";
 
 class UniswapV3Commons {
 
+    INVALID_POOL_ADDRESS = "0x0000000000000000000000000000000000000000";
+    FEES = [100, 500, 1000, 3000, 10000];
+
     constructor() {
         this.isInited = false;
         this.factoryContract = null;
         this.quoterContract = null;
-        this.fees = [100, 500, 1000, 3000, 10000];
-        console.log(`UniswapV3Commons.constructor;`);
+        //console.log(`UniswapV3Commons.constructor;`);
     }
 
     static get Instance() {
@@ -33,18 +35,24 @@ class UniswapV3Commons {
         this.factoryContract = new ethers.Contract(uniswapV3FactoryAddress, uniswapV3FactoryABI, web3Provider);
         this.quoterContract = new ethers.Contract(uniswapV3QuoterAddress, uniswapV3QuoterABI, web3Provider);
         this.isInited = true;
-        console.log(`UniswapV3Commons.init: DONE;`)
+        //console.log(`UniswapV3Commons.init: DONE;`)
     }
 
-    async findPool(token0Address, token1Address, fee) {
-        let poolAddress = await this.factoryContract.getPool(token0Address, token1Address, fee)
-        //console.log(`UniswapV3Commons.findPool: fee:${fee}; poolAddress:${poolAddress};`);
-        return poolAddress;
+    async findPools(token0Address, token1Address, fees) {
+        if (fees.length == 0) {
+            fees = FEES;
+        }
+        let resultsFeesAndPoolAddresses = [];
+        for (let i = 0; i < fees.length; i++) {
+            let aFee = fees[i];
+            let aPoolAddress = await this.factoryContract.getPool(token0Address, token1Address, aFee);
+            resultsFeesAndPoolAddresses.push([aFee, aPoolAddress]);
+        }
+        return resultsFeesAndPoolAddresses;
     }
 
     async getPrice(tokenInAddress, tokenOutAddress, amountIn, fee) {
         let quotedAmountOut = ethers.BigNumber.from(0);
-
         try {
             quotedAmountOut = await this.quoterContract.callStatic.quoteExactInputSingle(tokenInAddress, tokenOutAddress, fee, amountIn.toString(), 0);
             //console.log(`UniswapV3Commons.getPrice: quotedAmountOut:${quotedAmountOut};`);
@@ -52,21 +60,23 @@ class UniswapV3Commons {
         }
         if (!ethers.BigNumber.isBigNumber(quotedAmountOut)) {
             console.log(`UniswapV3Commons.getPrice: WARN - amountsOut returned is null, will return 0;`);
-            return ethers.BigNumber.from(0);
+            quotedAmountOut = ethers.BigNumber.from(0);
         }
         return quotedAmountOut;
     }
 
-    async getPricesAcrossAllFees(tokenInAddress, tokenOutAddress, amountIn) {
-        console.log(`UniswapV3Commons.getPricesAcrossAllFees: tokenInAddress:${tokenInAddress}; tokenOutAddress:${tokenOutAddress}; amountIn:${amountIn};`);
-        let resultsFeesAndQuotedAmountOut = [];
-        for (let i = 0; i < this.fees.length; i++) {
-            let aFee = this.fees[i];
-            //console.log(`__aFee:${aFee};`);
-            let quotedAmountOut = await this.getPrice(tokenInAddress, tokenOutAddress, amountIn, aFee);
-            resultsFeesAndQuotedAmountOut.push([aFee, quotedAmountOut]);
+    async getPrices(tokenInAddress, tokenOutAddress, amountIn, fees=[]) {
+        if (fees.length == 0) {
+            fees = FEES;
         }
-        return resultsFeesAndQuotedAmountOut;
+        let resultsFeesAndAmountOut = [];
+        for (let i = 0; i < fees.length; i++) {
+            let aFee = fees[i];
+            //console.log(`__aFee:${aFee};`);
+            let amountOut = await this.getPrice(tokenInAddress, tokenOutAddress, amountIn, aFee);
+            resultsFeesAndAmountOut.push([aFee, amountOut]);
+        }
+        return resultsFeesAndAmountOut;
     }
 
     lookupUniswapV3PoolFeeBySymbol(token1Symbol, token2Symbol) {

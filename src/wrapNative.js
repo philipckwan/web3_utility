@@ -1,9 +1,7 @@
 const {ethers} = require('ethers');
-const {ERC20_TOKEN} = require('./constants');
 const {init, getConnectedWallet, getNetwork, printNativeBalance, printTokenBalance} = require('./helpers');
 const {findOneToken} = require('./constantsToken');
-const ERC20ABI = require('../abis/abi.json');
-const { Constants } = require('./constants/Constants');
+const {Constants} = require('./constants/Constants');
 
 init();
 

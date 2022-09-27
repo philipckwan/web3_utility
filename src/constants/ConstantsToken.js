@@ -1,8 +1,3 @@
-require('dotenv').config();
-//const {getNetwork} = require('./helpers');
-const {Context} = require('../utils/Context');
-const {Constants} = require('./Constants');
-
 class ConstantsToken {
     static TOKENS_POLYGON_MAINNET = [
         ["0x2791bca1f2de4661ed88a30c99a7a9449aa84174", "USDC"],
@@ -54,6 +49,8 @@ class ConstantsToken {
         ["0x514910771af9ca656af840dff83e8264ecf986ca", "LINK"],
         ["0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e", "YFI"],
         ["0x58b6A8A3302369DAEc383334672404Ee733aB239", "LPT"],
+        ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "WBTC"],
+        ["", ""],
         ["", ""],
     ]
 
@@ -67,51 +64,6 @@ class ConstantsToken {
         ["", ""],
     ]
 
-    static getTokenStructs = () => {
-        let network = Context.getNetwork();
-        if (network == Constants.NETWORKS.POLYGON_MAINNET) {
-            return this.TOKENS_POLYGON_MAINNET;
-        }
-        if (network == Constants.NETWORKS.ETHEREUM_GOERLI) {
-            return this.TOKENS_ETHEREUM_GOERLI;
-        } 
-        if (network == Constants.NETWORKS.ETHEREUM_MAINNET) {
-            return this.TOKENS_ETHEREUM_MAINNET;
-        }
-        if (network == Constants.NETWORKS.FANTOM_MAINNET) {
-            return this.TOKENS_FANTOM_MAINNET;
-        }
-        console.log(`ConstantsToken.getTokenStructs: ERROR - network not found:${network}; returning empty array;`);
-        return [];
-    };
-
-    static findTokens = (tokenStr) => {
-        let tokenStructs = this.getTokenStructs();
-        let foundTokens = [];
-        for (let aToken of tokenStructs) {
-            let matchIdx = aToken[0].toUpperCase().indexOf(tokenStr.toUpperCase());
-            if (matchIdx >= 0) {
-                foundTokens.push(aToken);
-            } else {
-                let tokenSymbolWithPrefix = `@${aToken[1]}`;
-                matchIdx = tokenSymbolWithPrefix.toUpperCase().indexOf(tokenStr.toUpperCase());
-                if (matchIdx >= 0) {
-                    foundTokens.push(aToken);
-                }
-            }
-            //console.log(`aToken: addr:${aToken[0]}; symb:${aToken[1]};`);
-        }
-        return foundTokens;
-    }
-
-    static findOneToken = (tokenStr) => {
-        let foundTokens = this.findTokens(tokenStr);
-        if (foundTokens.length != 1) {
-            console.log(`ConstantsToken.findOneToken: ERROR - not able to find exactly 1 token, found ${foundTokens.length} instead; tokenStr:${tokenStr};`);
-            return undefined;
-        }
-        return foundTokens[0];
-    }
 }
 
 exports.ConstantsToken = ConstantsToken;

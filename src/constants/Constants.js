@@ -31,6 +31,7 @@ class Constants {
     WETH:["0x5333Eb1E32522F1893B7C9feA3c263807A02d561"]
   }
 
+  /*
   static ERC20_TOKEN = {
     MATIC: {
       symbol: "MATIC",
@@ -154,6 +155,7 @@ class Constants {
       }
     }
   };
+  */
 
   static SWAP_ROUTER = {
     POLYGON_UNISWAP_V3: {

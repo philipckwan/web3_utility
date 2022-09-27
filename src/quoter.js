@@ -1,6 +1,4 @@
-const {ConstantsToken} = require('./constants/ConstantsToken');
 const {ethers} = require('ethers');
-const {ConstantsSwap} = require('./constants/ConstantsSwap');
 const {Context} = require('./utils/Context');
 const {Utilities} = require('./utils/Utilities');
 const ERC20ABI = require('../abis/abi.json');
@@ -36,21 +34,19 @@ async function main() {
     await Context.printNetworkAndBlockNumber();
     let pricer = new Price(Context.getWeb3Provider());
     //return;
-    let swaps = ConstantsSwap.getSwapStructs();
-    if ("ALL" == parsedSwapsStr) {
-        // do nothing
-    } else {
-        swaps = [];
-        for (let i = 0; i < parsedSwapsStr.length; i++) {
-            swaps.push(ConstantsSwap.findASwapByPrefix(parsedSwapsStr.substring(i,i+1)));
-        }
-    }
 
+    let swapsAndFeesList = Context.swapsAndFeesParsers(parsedSwapsStr);
+    /*
+    for (let aResult of swapsAndFeesList) {
+        console.log(`aResult: [${aResult[0]}, ${aResult[1]}, [${aResult[2]}]];`);
+    }
+    */
+       
     let amount = 1;
     let isFromAll = false;
     if ("ALL" == parsedAmountStr) {
         isFromAll = true;
-    } else {
+    } else if (!isNaN(parsedAmountStr)) {
         amount = Number(parsedAmountStr);
     }
 
@@ -64,7 +60,7 @@ async function main() {
         if (remainingArgv[i].substring(0,2) == "0x") {
             tokens.push([remainingArgv[i], `unknown_token_${i-2}`])
         } else {
-            tokens.push(ConstantsToken.findOneToken(remainingArgv[i]))
+            tokens.push(Context.findOneToken(remainingArgv[i]))
         }
     }
 
@@ -82,24 +78,25 @@ async function main() {
     }
 
     let amountIn = amount;
-    let amountOutSwaps = [];
+    let swapShortAndFeeStrs = [];
     for (let i = 0; i < tokens.length - 1; i++) {
-        [amountOut, amountOutSwap] = await pricer.getMaxSwapAmount(tokens[i][0], tokens[i+1][0], amountIn, swaps);
-        amountIn = amountOut;
-        amountOutSwaps.push(amountOutSwap[1]);
+        [amountOut, amountOutSwapAndFee] = await pricer.getMaxSwapAmountBySwapsAndFeesList(tokens[i][0], tokens[i+1][0], amountIn, swapsAndFeesList);
+        amountIn = amountOut;ß
+        let swapShortAndFeeStr = `${amountOutSwapAndFee[1].substring(0, 3)}:${amountOutSwapAndFee[3]}`;
+        swapShortAndFeeStrs.push(swapShortAndFeeStr);
     }
     let route = "[";
     for (let i = 0; i < tokens.length; i++) {
         route += tokens[i][1];
         if (i != tokens.length - 1) {
-            route +=  `-(${amountOutSwaps[i]})`;
+            route +=  `-(${swapShortAndFeeStrs[i]})`;
         }
     }
     route += "]";
     //[maxAmountOut, maxAmountSwap] = await getMaxSwapAmount(tokenFrom[0], tokenTo[0], amount, swaps);
     console.log(`quoter: ${route} $${amountOut.toFixed(4)};`)
     //console.log(`quoter: [${tokenFrom[1]}]->[${tokenTo[1]}]; $${amount}->$${maxAmountOut}; swap[${maxAmountSwap[1]}]`);
-
+    
 }
 
 main();
