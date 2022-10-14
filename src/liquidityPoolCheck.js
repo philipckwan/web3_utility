@@ -48,7 +48,7 @@ async function main() {
             if (remainingArgv[i].substring(0,2) == "0x") {
                 tokens.push([remainingArgv[i], `unknown_token_${i-2}`])
             } else {
-                tokens.push(Context.findOneToken(remainingArgv[i]))
+                tokens.push(Context.findOneToken(remainingArgv[i], true))
             }
         }
     }    

@@ -3,6 +3,7 @@
 -separate script that requires signing (i.e. private key), vs just need wallet address
 -bug: in quoter, if amountIn is 0, got runtime error due to divide by 0
 DONE(27/9)-refactor: combine swaps and uniswapV3 fees into a list so that different uniswapV3 fees can be checked altogether
+DONE(14/10)-removed uniV3FeeCheck, plus some minor fixes
 
 
 ---------------------------------------------

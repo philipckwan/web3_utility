@@ -108,13 +108,25 @@ class Context {
         return foundTokens;
     }
 
-    findOneToken(tokenStr) {
+    findOneToken(tokenStr, exactMatchIfMoreThanOneFound=false) {
         let foundTokens = this.findTokens(tokenStr);
-        if (foundTokens.length != 1) {
-            console.log(`Context.findOneToken: ERROR - not able to find exactly 1 token, found ${foundTokens.length} instead; tokenStr:${tokenStr};`);
+        if (foundTokens.length == 0) {
+            console.log(`Context.findOneToken: ERROR - not able to find any token, tokenStr:${tokenStr};`);
             return undefined;
         }
-        return foundTokens[0];
+        if (foundTokens.length == 1) {
+            return foundTokens[0];
+        } 
+        if (exactMatchIfMoreThanOneFound) {
+            for (let aToken of foundTokens)  {
+                if (aToken[1].toUpperCase() == tokenStr.toUpperCase()) {
+                    return aToken;
+                }
+            }
+        }
+        console.log(`Context.findOneToken: ERROR - not able to find exactly 1 token, found ${foundTokens.length} instead; tokenStr:${tokenStr};`);
+        return undefined;
+
     }
 
     getSwapStructs() {
@@ -261,7 +273,7 @@ class Context {
           input: arrays of arguments, expecting they are all tokens, either symbol (i.e. usdt) or address (0x2791)
           output: a list of tokensStructs, as defined in ConstantsToken.js
          */
-        let tokens = argRemaining.map(anArg => this.findOneToken(anArg))
+        let tokens = argRemaining.map(anArg => this.findOneToken(anArg, true))
         return tokens;
     }
 

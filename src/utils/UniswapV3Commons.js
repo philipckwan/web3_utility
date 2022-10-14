@@ -40,7 +40,7 @@ class UniswapV3Commons {
 
     async findPools(token0Address, token1Address, fees) {
         if (fees.length == 0) {
-            fees = FEES;
+            fees = this.FEES;
         }
         let resultsFeesAndPoolAddresses = [];
         for (let i = 0; i < fees.length; i++) {
