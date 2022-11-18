@@ -228,7 +228,8 @@ class Constants {
     POLYGON_MUMBAI: "polygon_mumbai",
     ETHEREUM_MAINNET: "ethereum_mainnet",
     ETHEREUM_GOERLI:  "ethereum_goerli",
-    FANTOM_MAINNET: "fantom_mainnet"
+    FANTOM_MAINNET: "fantom_mainnet",
+    ARBITRUM_MAINNET: "arbitrum_mainnet"
   }
 }
 

@@ -4,6 +4,7 @@
 -bug: in quoter, if amountIn is 0, got runtime error due to divide by 0
 DONE(27/9)-refactor: combine swaps and uniswapV3 fees into a list so that different uniswapV3 fees can be checked altogether
 DONE(14/10)-removed uniV3FeeCheck, plus some minor fixes
+-add hardhat start and reset network forks, so that can loop query historic block status (i.e. price of a token a certain blockNum)
 
 
 ---------------------------------------------
@@ -27,5 +28,3 @@ DONE(22/9)-enhance quoter to automatically query prices across the 3 fee tiers i
 DONE(21/9)-add fantom network
 DONE(22/9)-add a liquidity pool queryer; liquidityPoolCheck.js
 DONE(22/9)-when doing price check (i.e. from quoter.js, Price.js), for uniswapV3, iterates all the fees to find the best rate
-
-0xE592427A0AEce92De3Edee1F18E0157C05861564

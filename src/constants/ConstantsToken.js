@@ -22,7 +22,7 @@ class ConstantsToken {
         //["0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97", "DFYN"],
         //["0x980111ae1B84E50222C8843e3A7a038F36Fecd2b", "STACK"],
         //["0xB0B417A00E1831DeF11b242711C3d251856AADe3", "DLP"],
-        //["0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97", "aPolWMATIC"],
+        ["0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97", "aPolWMATIC"],
         ["", ""],
         ["", ""],
         ["", ""],
@@ -44,15 +44,15 @@ class ConstantsToken {
         ["0xdac17f958d2ee523a2206206994597c13d831ec7", "USDT"],
         ["0x6b175474e89094c44da98b954eedeac495271d0f", "DAI"],
         ["0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", "stETH"],
-        //["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "WETH"],
+        ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "WETH"],
         //["0x4e15361fd6b4bb609fa63c81a2be19d873717870", "FTM"],
         //["0x514910771af9ca656af840dff83e8264ecf986ca", "LINK"],
-        //["0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e", "YFI"],
+        ["0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e", "YFI"],
         //["0x58b6A8A3302369DAEc383334672404Ee733aB239", "LPT"],
         //["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "WBTC"],
         ["0xeD1840223484483C0cb050E6fC344d1eBF0778a9", "bendWETH"],
         ["0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9", "cUSDT"],
-        ["", ""],
+        ["0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", "MATIC"],
         ["", ""],
     ]
 
@@ -63,6 +63,13 @@ class ConstantsToken {
         ["0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE", "BOO"],
         ["0xf0702249F4D3A25cD3DED7859a165693685Ab577", "spLP"],
         ["", ""],
+        ["", ""],
+    ]
+
+    static TOKENS_ARBITRUM_MAINNET = [
+        ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "USDT"],
+        ["0x6ab707Aca953eDAeFBc4fD23bA73294241490620", "aArbUSDT"],
+        ["0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "WETH"],
         ["", ""],
     ]
 

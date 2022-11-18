@@ -43,6 +43,9 @@ class Context {
         } else if (this.network == Constants.NETWORKS.FANTOM_MAINNET || this.network == "FM") {
             this.network = Constants.NETWORKS.FANTOM_MAINNET;
             this.apiUrl = process.env.API_URL_FANTOM_MAINNET;
+        } else if (this.network == Constants.NETWORKS.ARBITRUM_MAINNET || this.network == "AM") {
+            this.network = Constants.NETWORKS.ARBITRUM_MAINNET;
+            this.apiUrl = process.env.API_URL_ARBITRUM_MAINNET;            
         } else {
             console.log(`Context.init: ERROR - unknown network:${this.network};`);
             process.exit();
@@ -84,6 +87,9 @@ class Context {
         }
         if (network == Constants.NETWORKS.FANTOM_MAINNET) {
             return ConstantsToken.TOKENS_FANTOM_MAINNET;
+        }
+        if (network == Constants.NETWORKS.ARBITRUM_MAINNET) {
+            return ConstantsToken.TOKENS_ARBITRUM_MAINNET;
         }
         console.log(`Context.getTokenStructs: ERROR - network not found:${network}; returning empty array;`);
         return [];
@@ -135,6 +141,9 @@ class Context {
         }
         if (this.network == Constants.NETWORKS.ETHEREUM_MAINNET) {
             return ConstantsSwap.SWAPS_ETHEREUM_MAINNET;
+        }
+        if (this.network == Constants.NETWORKS.ARBITRUM_MAINNET) {
+            return ConstantsSwap.SWAPS_ARBITRUM_MAINNET;
         }
         console.log(`Context.getSwapStructs: ERROR - network not found:${this.network}; returning empty array;`);
         return [];

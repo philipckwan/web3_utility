@@ -8,7 +8,7 @@ const {WFTM_ABI} = require("../abis/fantom.json")
 async function main() {
     // arguments are being passed
     // node wrapNative.js <account> <amount>
-    if (process.argv.length != 4) {
+    if (process.argv.length < 4) {
         console.log(`wrapNative.main: ERROR - arguments wrong;`);
         console.log(`node wrapNative.js -a<amount> <private key>`);
         return;
@@ -34,11 +34,13 @@ async function main() {
     const network = Context.getNetwork();
 
     if (network == Constants.NETWORKS.POLYGON_MUMBAI || network == Constants.NETWORKS.POLYGON_MAINNET) {
-        wrappedNativeTokenStruct = Context.findOneToken("WMATIC");
+        wrappedNativeTokenStruct = Context.findOneToken("WMATIC", true);
     } else if (network == Constants.NETWORKS.ETHEREUM_GOERLI || network == Constants.NETWORKS.ETHEREUM_MAINNET) {
-        wrappedNativeTokenStruct = Context.findOneToken("WETH");
+        wrappedNativeTokenStruct = Context.findOneToken("WETH", true);
+    } else if (network == Constants.NETWORKS.ARBITRUM_MAINNET) {
+        wrappedNativeTokenStruct = Context.findOneToken("WETH", true);
     } else if (network == Constants.NETWORKS.FANTOM_MAINNET) {
-        wrappedNativeTokenStruct = Context.findOneToken("WFTM")
+        wrappedNativeTokenStruct = Context.findOneToken("WFTM", true)
     } else {
         console.log(`wrapNative: ERROR - invalid network to find the wrapped token; network:${network};`);
         return;

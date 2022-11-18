@@ -22,6 +22,12 @@ class ConstantsSwap {
         ["0xE592427A0AEce92De3Edee1F18E0157C05861564", "uniswapV3", 0, "U"],
         ["0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F", "sushiswap", 1, "S"],
     ]
+
+
+    static SWAPS_ARBITRUM_MAINNET = [
+        ["0xE592427A0AEce92De3Edee1F18E0157C05861564", "uniswapV3", 0, "U"],
+        ["0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", "sushiswap", 1, "S"],
+    ]
 }
 
 exports.ConstantsSwap = ConstantsSwap;
