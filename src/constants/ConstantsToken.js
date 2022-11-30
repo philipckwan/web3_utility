@@ -71,6 +71,14 @@ class ConstantsToken {
         ["0x6ab707Aca953eDAeFBc4fD23bA73294241490620", "aArbUSDT"],
         ["0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "WETH"],
         ["", ""],
+        ["", ""],
+    ]
+
+    static TOKENS_BSC_MAINNET = [
+        ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", "BUSD"],
+        ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", "WBNB"],
+        ["0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA", "WETH"],
+        ["", ""],
     ]
 
 }

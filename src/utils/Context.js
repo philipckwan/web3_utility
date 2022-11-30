@@ -46,6 +46,9 @@ class Context {
         } else if (this.network == Constants.NETWORKS.ARBITRUM_MAINNET || this.network == "AM") {
             this.network = Constants.NETWORKS.ARBITRUM_MAINNET;
             this.apiUrl = process.env.API_URL_ARBITRUM_MAINNET;            
+        } else if (this.network == Constants.NETWORKS.BSC_MAINNET || this.network == "BM") {
+            this.network = Constants.NETWORKS.BSC_MAINNET;
+            this.apiUrl = process.env.API_URL_BSC_MAINNET;
         } else {
             console.log(`Context.init: ERROR - unknown network:${this.network};`);
             process.exit();
@@ -90,6 +93,9 @@ class Context {
         }
         if (network == Constants.NETWORKS.ARBITRUM_MAINNET) {
             return ConstantsToken.TOKENS_ARBITRUM_MAINNET;
+        }
+        if (network == Constants.NETWORKS.BSC_MAINNET) {
+            return ConstantsToken.TOKENS_BSC_MAINNET;
         }
         console.log(`Context.getTokenStructs: ERROR - network not found:${network}; returning empty array;`);
         return [];
@@ -144,6 +150,9 @@ class Context {
         }
         if (this.network == Constants.NETWORKS.ARBITRUM_MAINNET) {
             return ConstantsSwap.SWAPS_ARBITRUM_MAINNET;
+        }
+        if (this.network == Constants.NETWORKS.BSC_MAINNET) {
+            return ConstantsSwap.SWAPS_BSC_MAINNET;
         }
         console.log(`Context.getSwapStructs: ERROR - network not found:${this.network}; returning empty array;`);
         return [];

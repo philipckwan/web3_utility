@@ -9,6 +9,17 @@ class Utilities {
         return `${hour.toString().padStart(2,"0")}:${minute.toString().padStart(2,"0")}:${second.toString().padStart(2,"0")}:${mSec.toString().padStart(3,"0")}`;
     }
 
+    static formatTimeFull(d) {
+        let month = d.getMonth()+1;
+        let date = d.getDate();
+
+        let hour = d.getHours();
+        let minute = d.getMinutes();
+        let second = d.getSeconds();
+        //let mSec = d.getMilliseconds();
+        return `${month.toString().padStart(2,"0")}-${date.toString().padStart(2,"0")}|${hour.toString().padStart(2,"0")}:${minute.toString().padStart(2,"0")}:${second.toString().padStart(2,"0")}`;
+    }
+
     static ARGV_KEY_SWAPS = ["-s", "SWAPS"]
     static ARGV_KEY_AMOUNT = ["-a", "AMOUNT"]
     static ARGV_KEY_NETWORK = ["-n", "NETWORK"]
