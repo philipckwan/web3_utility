@@ -49,7 +49,13 @@ class Context {
         } else if (this.network == Constants.NETWORKS.BSC_MAINNET || this.network == "BM") {
             this.network = Constants.NETWORKS.BSC_MAINNET;
             this.apiUrl = process.env.API_URL_BSC_MAINNET;
-        } else {
+        } else if (this.network == Constants.NETWORKS.POLYGON_ZKEVM_TESTNET || this.network == "PZT") {
+            this.network = Constants.NETWORKS.POLYGON_ZKEVM_TESTNET;
+            this.apiUrl = process.env.API_URL_POLYGON_ZKEVM_TESTNET;
+        } else if (this.network == Constants.NETWORKS.OPTIMISM_MAINNET || this.network == "OM") {
+            this.network = Constants.NETWORKS.OPTIMISM_MAINNET;
+            this.apiUrl = process.env.API_URL_OPTIMISM_MAINNET;            
+        }  else {
             console.log(`Context.init: ERROR - unknown network:${this.network};`);
             process.exit();
         }
@@ -96,6 +102,12 @@ class Context {
         }
         if (network == Constants.NETWORKS.BSC_MAINNET) {
             return ConstantsToken.TOKENS_BSC_MAINNET;
+        }
+        if (network == Constants.NETWORKS.POLYGON_ZKEVM_TESTNET) {
+            return ConstantsToken.TOKENS_POLYGON_ZKEVM_TESTNET;
+        }
+        if (network == Constants.NETWORKS.OPTIMISM_MAINNET) {
+            return ConstantsToken.TOKENS_OPTIMISM_MAINNET;
         }
         console.log(`Context.getTokenStructs: ERROR - network not found:${network}; returning empty array;`);
         return [];
@@ -153,6 +165,9 @@ class Context {
         }
         if (this.network == Constants.NETWORKS.BSC_MAINNET) {
             return ConstantsSwap.SWAPS_BSC_MAINNET;
+        }
+        if (this.network == Constants.NETWORKS.POLYGON_ZKEVM_TESTNET) {
+            return ConstantsSwap.POLYGON_ZKEVM_TESTNET;
         }
         console.log(`Context.getSwapStructs: ERROR - network not found:${this.network}; returning empty array;`);
         return [];

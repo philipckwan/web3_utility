@@ -23,9 +23,11 @@ class ConstantsToken {
         //["0x980111ae1B84E50222C8843e3A7a038F36Fecd2b", "STACK"],
         //["0xB0B417A00E1831DeF11b242711C3d251856AADe3", "DLP"],
         ["0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97", "aPolWMATIC"],
-        ["", ""],
-        ["", ""],
-        ["", ""],
+        ["0x6ab707Aca953eDAeFBc4fD23bA73294241490620", "aPolUSDT"],
+        ["0x8159462d255C1D24915CB51ec361F700174cD994", "B-stMATIC-Stable"],
+        ["0xF79BF908d0e6d8E7054375CD80dD33424B1980bf", "mooBalancerMatic-stMaticV2"],
+        ["0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4", "stMATIC"],
+        ["0xC3C7d422809852031b44ab29EEC9F1EfF2A58756", "LDO"],
     ]
 
     static TOKENS_ETHEREUM_GOERLI = [
@@ -33,7 +35,7 @@ class ConstantsToken {
         ["0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60", "DAI"],
         ["0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6", "WETH"],
         ["0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "UNI"],
-        ["", ""],
+        ["0x83a9250121b87fFa80851D8b776b336D74C54F39", "HKDT"],
         ["", ""],
         ["", ""],
     ]
@@ -51,8 +53,11 @@ class ConstantsToken {
         //["0x58b6A8A3302369DAEc383334672404Ee733aB239", "LPT"],
         //["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "WBTC"],
         ["0xeD1840223484483C0cb050E6fC344d1eBF0778a9", "bendWETH"],
-        ["0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9", "cUSDT"],
+        //["0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9", "cUSDT"],
         ["0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", "MATIC"],
+        ["0xc00e94Cb662C3520282E6f5717214004A7f26888", "COMP"],
+        ["0x06325440D014e39736583c165C2963BA99fAf14E", "steCRV"],
+        ["0xa7739fd3d12ac7F16D8329AF3Ee407e19De10D8D", "mooConvexStETH"],
         ["", ""],
     ]
 
@@ -62,6 +67,7 @@ class ConstantsToken {
         ["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", "WFTM"],
         ["0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE", "BOO"],
         ["0xf0702249F4D3A25cD3DED7859a165693685Ab577", "spLP"],
+        ["0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44", "DEUS"],
         ["", ""],
         ["", ""],
     ]
@@ -70,15 +76,39 @@ class ConstantsToken {
         ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "USDT"],
         ["0x6ab707Aca953eDAeFBc4fD23bA73294241490620", "aArbUSDT"],
         ["0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "WETH"],
-        ["", ""],
-        ["", ""],
+        ["0x1aDDD80E6039594eE970E5872D247bf0414C8903", "fsGLP"],
+        ["0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "GMX"],
+        ["0xd2D1162512F927a7e282Ef43a362659E4F2a728F", "sbfGMX"],
+        ["0x96e23B0d217894b8dA9e149F0Ca1A97b9B7C77b2", "mooFishBTC-ETH"],
+        ["0xf7C6FFA90E8f240481234fb3fe9E8F60df74ED87", "FISH LP"],
+        //["0x5575552988A3A80504bBaeB1311674fCFd40aD4B", "SPA"],   
+        ["0x561877b6b3DD7651313794e5F2894B2F18bE0766", "MATIC"],
+        ["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "USDC"],     
+        ["0xFCCf3cAbbe80101232d343252614b6A3eE81C989", "variableDebtArbUSDC"],
+        ["", ""],        
     ]
 
     static TOKENS_BSC_MAINNET = [
         ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", "BUSD"],
         ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", "WBNB"],
         ["0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA", "WETH"],
+        ["0xba2ae424d960c26247dd6c32edc70b295c744c43", "DOGE"],
+        ["0xac109C8025F272414fd9e2faA805a583708A017f", "Cake-LP"],
+        ["0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82", "Cake"],
         ["", ""],
+        ["", ""],
+    ]
+
+    static TOKENS_POLYGON_ZKEVM_TESTNET = [
+        ["0x95237b708bc86240Ef3f48c76b325dFE10976772", "KCT"],
+        ["", ""],
+    ]
+
+    static TOKENS_OPTIMISM_MAINNET = [
+        ["0x4200000000000000000000000000000000000042", "OP"],
+        ["0x3eaEb77b03dBc0F6321AE1b72b2E9aDb0F60112B", "SUSHI"],
+        ["", ""],
+        ["", ""],        
     ]
 
 }

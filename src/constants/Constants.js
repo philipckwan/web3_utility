@@ -230,7 +230,9 @@ class Constants {
     ETHEREUM_GOERLI:  "ethereum_goerli",
     FANTOM_MAINNET: "fantom_mainnet",
     ARBITRUM_MAINNET: "arbitrum_mainnet",
-    BSC_MAINNET: "bsc_mainnet"
+    BSC_MAINNET: "bsc_mainnet",
+    POLYGON_ZKEVM_TESTNET: "polygon_zkevm_testnet",
+    OPTIMISM_MAINNET: "optimism_mainnet",
   }
 }
 
