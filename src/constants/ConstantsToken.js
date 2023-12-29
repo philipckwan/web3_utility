@@ -49,19 +49,19 @@ class ConstantsToken {
         ["0x6b175474e89094c44da98b954eedeac495271d0f", "DAI"],
         ["0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", "stETH"],
         ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "WETH"],
-        //["0x4e15361fd6b4bb609fa63c81a2be19d873717870", "FTM"],
-        //["0x514910771af9ca656af840dff83e8264ecf986ca", "LINK"],
+        ["0x4e15361fd6b4bb609fa63c81a2be19d873717870", "FTM"],
+        ["0x514910771af9ca656af840dff83e8264ecf986ca", "LINK"],
         ["0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e", "YFI"],
-        //["0x58b6A8A3302369DAEc383334672404Ee733aB239", "LPT"],
-        //["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "WBTC"],
+        ["0x58b6A8A3302369DAEc383334672404Ee733aB239", "LPT"],
+        ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "WBTC"],
         ["0xeD1840223484483C0cb050E6fC344d1eBF0778a9", "bendWETH"],
-        //["0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9", "cUSDT"],
+        ["0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9", "cUSDT"],
         ["0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", "MATIC"],
         ["0xc00e94Cb662C3520282E6f5717214004A7f26888", "COMP"],
         ["0x06325440D014e39736583c165C2963BA99fAf14E", "steCRV"],
         ["0xa7739fd3d12ac7F16D8329AF3Ee407e19De10D8D", "mooConvexStETH"],
         ["0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32", "LDO"],
-        ["", ""],
+        ["0x06450dee7fd2fb8e39061434babcfc05599a6fb8", "XEN"],
         ["", ""],
     ]
 
@@ -73,8 +73,8 @@ class ConstantsToken {
         ["0xf0702249F4D3A25cD3DED7859a165693685Ab577", "spLP"],
         ["0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44", "DEUS"],
         ["0x321162Cd933E2Be498Cd2267a90534A804051b11", "BTC"],
-        ["0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", "USDC"],
-        ["", ""],
+        ["0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", "USDC_Multichain"],
+        ["0x28a92dde19D9989F39A49905d7C9C2FAc7799bDf", "USDC"],
         ["", ""],
     ]
 
@@ -91,7 +91,9 @@ class ConstantsToken {
         ["0x561877b6b3DD7651313794e5F2894B2F18bE0766", "MATIC"],
         ["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "USDC"],     
         ["0xFCCf3cAbbe80101232d343252614b6A3eE81C989", "variableDebtArbUSDC"],
-        ["", ""],        
+        ["0x912CE59144191C1204E64559FE8253a0e49E6548", "ARB"],   
+        ["", ""],
+        ["", ""],     
     ]
 
     static TOKENS_BSC_MAINNET = [
@@ -113,8 +115,10 @@ class ConstantsToken {
     static TOKENS_OPTIMISM_MAINNET = [
         ["0x4200000000000000000000000000000000000042", "OP"],
         ["0x3eaEb77b03dBc0F6321AE1b72b2E9aDb0F60112B", "SUSHI"],
-        ["", ""],
-        ["", ""],        
+        ["0x4200000000000000000000000000000000000006", "WETH"],
+        ["0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", "DAI"],  
+        ["", ""],   
+        ["", ""],         
     ]
 
 }
