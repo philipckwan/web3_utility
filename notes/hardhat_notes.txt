@@ -1,0 +1,98 @@
+To start a new hardhat project:
+https://hardhat.org/tutorial/creating-a-new-hardhat-project
+
+hardhat-2$ npm init
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (hardhat-2) 
+version: (1.0.0) 
+description: 
+entry point: (index.js) 
+test command: 
+git repository: 
+keywords: 
+author: 
+license: (ISC) 
+About to write to /Users/.../hardhat-2/package.json:
+
+{
+  "name": "hardhat-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
+
+Is this OK? (yes) 
+
+Then, install hardhat:
+
+$ npm install --save-dev hardhat
+
+Then, run hardhat:
+
+$ npx hardhat
+888    888                      888 888               888
+888    888                      888 888               888
+888    888                      888 888               888
+8888888888  8888b.  888d888 .d88888 88888b.   8888b.  888888
+888    888     "88b 888P"  d88" 888 888 "88b     "88b 888
+888    888 .d888888 888    888  888 888  888 .d888888 888
+888    888 888  888 888    Y88b 888 888  888 888  888 Y88b.
+888    888 "Y888888 888     "Y88888 888  888 "Y888888  "Y888
+
+👷 Welcome to Hardhat v2.12.1 👷‍
+
+✔ What do you want to do? · Create an empty hardhat.config.js
+✨ Config file created ✨
+
+Give Hardhat a star on Github if you're enjoying it! 💞✨
+
+     https://github.com/NomicFoundation/hardhat
+
+$
+
+Then, install hardhat toolbox:
+
+$ npm install --save-dev @nomicfoundation/hardhat-toolbox
+
+...
+
+Follow these to create a new contract and a test js:
+https://hardhat.org/tutorial/writing-and-compiling-contracts
+https://hardhat.org/tutorial/testing-contracts
+
+create the files, then compile the contract:
+$ npx hardhat compile
+
+in addition, might need to install these:
+$ npm install -D @nomiclabs/hardhat-waffle ethereum-waffle
+$ npm install --save-dev ethers
+
+also, add this to hardhat.config.js:
+require("@nomiclabs/hardhat-waffle");
+
+now, able to run the test:
+
+$ npx hardhat test
+
+
+  Token contract
+    ✔ Deployment should assign the total supply of tokens to the owner (1384ms)
+
+
+  1 passing (1s)
+

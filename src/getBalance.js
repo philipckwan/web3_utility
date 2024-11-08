@@ -20,7 +20,9 @@ async function printTokenBalance(walletAddress, tokenAddress) {
 async function main() {
     if (process.argv.length < 3) {
         console.log(`swapTokens.main: ERROR - arguments wrong;`);
-        console.log(`node getBalance.js me|<wallet address>|<privateKey> [ <token1|all> <token2>... ]`);
+        console.log(`node getBalance.js me|<wallet address>|<privateKey> [ <token1|all> <token2>... ] [(additional options)]`);
+        console.log(`additional options:`);
+        console.log(`-n : network; -nEM (for ethereum mainnet) | -nPM (for polygon mainnet) etc...`)
         return;
     }
 

@@ -75,6 +75,8 @@ class ConstantsToken {
         ["0x321162Cd933E2Be498Cd2267a90534A804051b11", "BTC"],
         ["0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", "USDC_Multichain"],
         ["0x28a92dde19D9989F39A49905d7C9C2FAc7799bDf", "USDC"],
+        ["0x1B6382DBDEa11d97f24495C9A90b7c88469134a4", "axlUSDC"],
+        ["", ""],
         ["", ""],
     ]
 
@@ -82,17 +84,19 @@ class ConstantsToken {
         ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "USDT"],
         ["0x6ab707Aca953eDAeFBc4fD23bA73294241490620", "aArbUSDT"],
         ["0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "WETH"],
-        ["0x1aDDD80E6039594eE970E5872D247bf0414C8903", "fsGLP"],
+        //["0x1aDDD80E6039594eE970E5872D247bf0414C8903", "fsGLP"],
         ["0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "GMX"],
         ["0xd2D1162512F927a7e282Ef43a362659E4F2a728F", "sbfGMX"],
         ["0x96e23B0d217894b8dA9e149F0Ca1A97b9B7C77b2", "mooFishBTC-ETH"],
         ["0xf7C6FFA90E8f240481234fb3fe9E8F60df74ED87", "FISH LP"],
         //["0x5575552988A3A80504bBaeB1311674fCFd40aD4B", "SPA"],   
-        ["0x561877b6b3DD7651313794e5F2894B2F18bE0766", "MATIC"],
-        ["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "USDC"],     
-        ["0xFCCf3cAbbe80101232d343252614b6A3eE81C989", "variableDebtArbUSDC"],
+        //["0x561877b6b3DD7651313794e5F2894B2F18bE0766", "MATIC"],
+        //["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "USDC"],     
+        //["0xFCCf3cAbbe80101232d343252614b6A3eE81C989", "variableDebtArbUSDC"],
         ["0x912CE59144191C1204E64559FE8253a0e49E6548", "ARB"],   
-        ["", ""],
+        ["0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", "WBTC"],
+        ["0xf42Ae1D54fd613C9bb14810b0588FaAa09a426cA", "esGMX"],  
+        ["", ""],  
         ["", ""],     
     ]
 
@@ -103,7 +107,7 @@ class ConstantsToken {
         ["0xba2ae424d960c26247dd6c32edc70b295c744c43", "DOGE"],
         ["0xac109C8025F272414fd9e2faA805a583708A017f", "Cake-LP"],
         ["0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82", "Cake"],
-        ["", ""],
+        ["0x55d398326f99059fF775485246999027B3197955", "abc"],
         ["", ""],
     ]
 
